@@ -2,11 +2,11 @@ package bloodmatch.domain.roles;
 
 import bloodmatch.domain.party.Party;
 
-public abstract class PartyRole {
+public abstract class PartyRole<T extends Party> {
 
-  protected Party party;
+  protected T party;
 
-  protected PartyRole(Party party) {
+  protected PartyRole(T party) {
 
     if (party == null)
       throw new IllegalArgumentException("Party cannot be null");
@@ -14,7 +14,7 @@ public abstract class PartyRole {
     this.party = party;
   }
 
-  public Party getParty() {
+  public T getParty() {
     return party;
   }
 

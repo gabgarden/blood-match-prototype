@@ -2,12 +2,11 @@ package bloodmatch.application.usecase;
 
 import bloodmatch.domain.donationRequest.DonationRequest;
 import bloodmatch.domain.matching.DonorMatchingService;
-import bloodmatch.domain.party.Party;
 import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.shared.valueObjects.DomainID;
 import bloodmatch.interfaces.DonationRequestRepositoryInterface;
 import bloodmatch.interfaces.DonorRecommendationPolicyInterface;
-import bloodmatch.interfaces.PartyRepositoryInterface;
+import bloodmatch.interfaces.DonorRepositoryInterface;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,32 +15,32 @@ import java.util.List;
 public class FindEligibleDonorsUseCase {
 
   private final DonationRequestRepositoryInterface donationRequestRepository;
-  private final PartyRepositoryInterface partyRepository;
+  private final DonorRepositoryInterface donorRepository;
   private final DonorMatchingService donorMatchingService;
   private final DonorRecommendationPolicyInterface recommendationPolicy;
 
   public FindEligibleDonorsUseCase(
       DonationRequestRepositoryInterface donationRequestRepository,
-      PartyRepositoryInterface partyRepository,
+      DonorRepositoryInterface donorRepository,
       DonorMatchingService donorMatchingService) {
-    this(donationRequestRepository, partyRepository, donorMatchingService, null);
+    this(donationRequestRepository, donorRepository, donorMatchingService, null);
   }
 
   public FindEligibleDonorsUseCase(
       DonationRequestRepositoryInterface donationRequestRepository,
-      PartyRepositoryInterface partyRepository,
+      DonorRepositoryInterface donorRepository,
       DonorMatchingService donorMatchingService,
       DonorRecommendationPolicyInterface recommendationPolicy) {
 
     if (donationRequestRepository == null)
       throw new IllegalArgumentException("DonationRequestRepository cannot be null");
-    if (partyRepository == null)
-      throw new IllegalArgumentException("PartyRepository cannot be null");
+    if (donorRepository == null)
+      throw new IllegalArgumentException("DonorRepository cannot be null");
     if (donorMatchingService == null)
       throw new IllegalArgumentException("DonorMatchingService cannot be null");
 
     this.donationRequestRepository = donationRequestRepository;
-    this.partyRepository = partyRepository;
+    this.donorRepository = donorRepository;
     this.donorMatchingService = donorMatchingService;
     this.recommendationPolicy = recommendationPolicy;
   }
@@ -66,11 +65,8 @@ public class FindEligibleDonorsUseCase {
       if (donorId == null)
         throw new IllegalArgumentException("Donor id cannot be null");
 
-      Party donorParty = partyRepository.findById(donorId)
-          .orElseThrow(() -> new IllegalArgumentException("Donor party not found: " + donorId.getValue()));
-
-      Donor donor = donorParty.getRole(Donor.class)
-          .orElseThrow(() -> new IllegalArgumentException("Party does not have Donor role: " + donorId.getValue()));
+        Donor donor = donorRepository.findByPartyId(donorId)
+          .orElseThrow(() -> new IllegalArgumentException("Donor role not found: " + donorId.getValue()));
 
       donors.add(donor);
     }

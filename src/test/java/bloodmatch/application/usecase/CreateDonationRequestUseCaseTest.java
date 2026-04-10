@@ -1,7 +1,7 @@
 package bloodmatch.application.usecase;
 
 import bloodmatch.domain.donationRequest.DonationRequest;
-import bloodmatch.domain.party.Man;
+import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.requester.Requester;
@@ -9,8 +9,9 @@ import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
 import bloodmatch.domain.shared.valueObjects.CPF;
 import bloodmatch.domain.shared.valueObjects.DomainID;
+import bloodmatch.interfaces.BloodCenterRepositoryInterface;
 import bloodmatch.interfaces.DonationRequestRepositoryInterface;
-import bloodmatch.interfaces.PartyRepositoryInterface;
+import bloodmatch.interfaces.RequesterRepositoryInterface;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -28,34 +29,34 @@ class CreateDonationRequestUseCaseTest {
 
   private final DonationRequestRepositoryInterface donationRequestRepository = mock(
       DonationRequestRepositoryInterface.class);
-  private final PartyRepositoryInterface partyRepository = mock(PartyRepositoryInterface.class);
+    private final RequesterRepositoryInterface requesterRepository = mock(RequesterRepositoryInterface.class);
+    private final BloodCenterRepositoryInterface bloodCenterRepository = mock(BloodCenterRepositoryInterface.class);
 
   private final CreateDonationRequestUseCase useCase = new CreateDonationRequestUseCase(donationRequestRepository,
-      partyRepository);
+            requesterRepository,
+            bloodCenterRepository);
 
   @Test
   void shouldCreateAndSaveDonationRequest() {
     LocalDate currentDate = LocalDate.of(2026, 3, 16);
     LocalDate dateLimit = currentDate.plusDays(10);
 
-    Man requesterParty = new Man(
+    Person requesterParty = new Person(
         "Requester Person",
         new CPF("12345678901"),
         LocalDate.of(1995, 1, 1));
     Requester requester = new Requester(requesterParty);
-    requesterParty.addRole(requester);
 
     Organization bloodCenterParty = new Organization(
         "Main Blood Center",
         new CNPJ("12345678000100"));
     BloodCenter bloodCenter = new BloodCenter(bloodCenterParty);
-    bloodCenterParty.addRole(bloodCenter);
 
     DomainID requesterId = DomainID.generate();
     DomainID bloodCenterId = DomainID.generate();
 
-    when(partyRepository.findById(requesterId)).thenReturn(Optional.of(requesterParty));
-    when(partyRepository.findById(bloodCenterId)).thenReturn(Optional.of(bloodCenterParty));
+    when(requesterRepository.findByPartyId(requesterId)).thenReturn(Optional.of(requester));
+    when(bloodCenterRepository.findByPartyId(bloodCenterId)).thenReturn(Optional.of(bloodCenter));
 
     DonationRequest request = useCase.execute(
         requesterId,
@@ -71,24 +72,18 @@ class CreateDonationRequestUseCaseTest {
   }
 
   @Test
-  void shouldThrowWhenRequesterPartyDoesNotHaveRequesterRole() {
+    void shouldThrowWhenRequesterRoleIsMissing() {
     LocalDate currentDate = LocalDate.of(2026, 3, 16);
     DomainID requesterId = DomainID.generate();
     DomainID bloodCenterId = DomainID.generate();
-
-    Man requesterParty = new Man(
-        "Requester Person",
-        new CPF("12345678901"),
-        LocalDate.of(1995, 1, 1));
 
     Organization bloodCenterParty = new Organization(
         "Main Blood Center",
         new CNPJ("12345678000100"));
     BloodCenter bloodCenter = new BloodCenter(bloodCenterParty);
-    bloodCenterParty.addRole(bloodCenter);
 
-    when(partyRepository.findById(requesterId)).thenReturn(Optional.of(requesterParty));
-    when(partyRepository.findById(bloodCenterId)).thenReturn(Optional.of(bloodCenterParty));
+        when(requesterRepository.findByPartyId(requesterId)).thenReturn(Optional.empty());
+        when(bloodCenterRepository.findByPartyId(bloodCenterId)).thenReturn(Optional.of(bloodCenter));
 
     assertThrows(
         IllegalArgumentException.class,

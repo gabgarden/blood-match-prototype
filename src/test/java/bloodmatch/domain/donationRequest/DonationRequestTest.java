@@ -1,6 +1,6 @@
 package bloodmatch.domain.donationRequest;
 
-import bloodmatch.domain.party.Man;
+import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.MaleDonor;
@@ -20,15 +20,12 @@ class DonationRequestTest {
 
   // aux methods to create valid objects for testing
   private Requester createRequester() {
-    Man person = new Man(
+    Person person = new Person(
         "Gabriel",
         new CPF("12345678901"),
         LocalDate.of(1999, 6, 22));
 
-    Requester requester = new Requester(person);
-    person.addRole(requester);
-
-    return requester;
+    return new Requester(person);
   }
 
   private BloodCenter createBloodCenter() {
@@ -37,8 +34,6 @@ class DonationRequestTest {
         new CNPJ("12345678000100"));
 
     BloodCenter bloodCenter = new BloodCenter(organization);
-    organization.addRole(bloodCenter);
-
     return bloodCenter;
   }
 
@@ -46,7 +41,7 @@ class DonationRequestTest {
       String bloodType,
       LocalDate currentDate) {
 
-    Man donorPerson = new Man(
+    Person donorPerson = new Person(
         "Carlos",
         new CPF("98765432100"),
         currentDate.minusYears(30));
@@ -74,19 +69,13 @@ class DonationRequestTest {
   }
 
   @Test
-  void shouldNotCreateDonationRequestWhenRequesterRoleIsNotAttachedToParty() {
-    Man person = new Man(
-        "Gabriel",
-        new CPF("12345678901"),
-        LocalDate.of(1999, 6, 22));
-
-    Requester requester = new Requester(person);
+  void shouldNotCreateDonationRequestWhenRequesterIsNull() {
     BloodCenter bloodCenter = createBloodCenter();
 
     assertThrows(
         IllegalArgumentException.class,
         () -> DonationRequest.create(
-            requester,
+            null,
             bloodCenter,
             BloodType.of("A+"),
             LocalDate.now().plusDays(10)));

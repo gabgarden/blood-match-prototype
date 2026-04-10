@@ -2,42 +2,47 @@
 package bloodmatch.application.usecase;
 
 import bloodmatch.domain.donation.Donation;
-import bloodmatch.domain.donation.DonationDomainService;
+import bloodmatch.domain.donation.DonationFactory;
 import bloodmatch.domain.donationRequest.DonationRequest;
-import bloodmatch.domain.party.Party;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.shared.valueObjects.DomainID;
+import bloodmatch.interfaces.BloodCenterRepositoryInterface;
+import bloodmatch.interfaces.DonorRepositoryInterface;
 import bloodmatch.interfaces.DonationRepositoryInterface;
 import bloodmatch.interfaces.DonationRequestRepositoryInterface;
-import bloodmatch.interfaces.PartyRepositoryInterface;
 
 import java.time.LocalDate;
 
 public class RegisterDonationUseCase {
 
-  private final DonationDomainService donationDomainService;
-  private final PartyRepositoryInterface partyRepository;
+  private final DonationFactory donationFactory;
+    private final DonorRepositoryInterface donorRepository;
+    private final BloodCenterRepositoryInterface bloodCenterRepository;
   private final DonationRequestRepositoryInterface donationRequestRepository;
   private final DonationRepositoryInterface donationRepository;
 
   public RegisterDonationUseCase(
-      DonationDomainService donationDomainService,
-      PartyRepositoryInterface partyRepository,
+      DonationFactory donationFactory,
+      DonorRepositoryInterface donorRepository,
+      BloodCenterRepositoryInterface bloodCenterRepository,
       DonationRequestRepositoryInterface donationRequestRepository,
       DonationRepositoryInterface donationRepository) {
 
-    if (donationDomainService == null)
-      throw new IllegalArgumentException("DonationDomainService cannot be null");
-    if (partyRepository == null)
-      throw new IllegalArgumentException("PartyRepository cannot be null");
+    if (donationFactory == null)
+      throw new IllegalArgumentException("DonationFactory cannot be null");
+    if (donorRepository == null)
+      throw new IllegalArgumentException("DonorRepository cannot be null");
+    if (bloodCenterRepository == null)
+      throw new IllegalArgumentException("BloodCenterRepository cannot be null");
     if (donationRequestRepository == null)
       throw new IllegalArgumentException("DonationRequestRepository cannot be null");
     if (donationRepository == null)
       throw new IllegalArgumentException("DonationRepository cannot be null");
 
-    this.donationDomainService = donationDomainService;
-    this.partyRepository = partyRepository;
+    this.donationFactory = donationFactory;
+    this.donorRepository = donorRepository;
+    this.bloodCenterRepository = bloodCenterRepository;
     this.donationRequestRepository = donationRequestRepository;
     this.donationRepository = donationRepository;
   }
@@ -54,19 +59,13 @@ public class RegisterDonationUseCase {
     if (date == null)
       throw new IllegalArgumentException("Date cannot be null");
 
-    Party donorParty = partyRepository.findById(donorId)
-        .orElseThrow(() -> new IllegalArgumentException("Donor party not found"));
+    Donor donor = donorRepository.findByPartyId(donorId)
+      .orElseThrow(() -> new IllegalArgumentException("Donor role not found"));
 
-    Donor donor = donorParty.getRole(Donor.class)
-        .orElseThrow(() -> new IllegalArgumentException("Party does not have Donor role"));
+    BloodCenter bloodCenter = bloodCenterRepository.findByPartyId(bloodCenterId)
+      .orElseThrow(() -> new IllegalArgumentException("Blood center role not found"));
 
-    Party bloodCenterParty = partyRepository.findById(bloodCenterId)
-        .orElseThrow(() -> new IllegalArgumentException("Blood center party not found"));
-
-    BloodCenter bloodCenter = bloodCenterParty.getRole(BloodCenter.class)
-        .orElseThrow(() -> new IllegalArgumentException("Party does not have BloodCenter role"));
-
-    Donation donation = donationDomainService.registerDonation(donor, bloodCenter, date);
+    Donation donation = donationFactory.createExternalDonation(donor, bloodCenter, date);
     donationRepository.save(donation);
     return donation;
   }
@@ -81,16 +80,13 @@ public class RegisterDonationUseCase {
     if (requestId == null)
       throw new IllegalArgumentException("Request id cannot be null");
 
-    Party donorParty = partyRepository.findById(donorId)
-        .orElseThrow(() -> new IllegalArgumentException("Donor party not found"));
-
-    Donor donor = donorParty.getRole(Donor.class)
-        .orElseThrow(() -> new IllegalArgumentException("Party does not have Donor role"));
+    Donor donor = donorRepository.findByPartyId(donorId)
+      .orElseThrow(() -> new IllegalArgumentException("Donor role not found"));
 
     DonationRequest request = donationRequestRepository.findById(requestId)
         .orElseThrow(() -> new IllegalArgumentException("Donation request not found"));
 
-    Donation donation = donationDomainService.registerDonationFromRequest(donor, request, date);
+    Donation donation = donationFactory.createDonationFromRequest(donor, request, date);
     donationRepository.save(donation);
     return donation;
   }

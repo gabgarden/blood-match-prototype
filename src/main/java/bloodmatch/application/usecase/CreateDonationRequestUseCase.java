@@ -1,31 +1,37 @@
 package bloodmatch.application.usecase;
 
 import bloodmatch.domain.donationRequest.DonationRequest;
-import bloodmatch.domain.party.Party;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.DomainID;
+import bloodmatch.interfaces.BloodCenterRepositoryInterface;
 import bloodmatch.interfaces.DonationRequestRepositoryInterface;
-import bloodmatch.interfaces.PartyRepositoryInterface;
+import bloodmatch.interfaces.RequesterRepositoryInterface;
 
 import java.time.LocalDate;
 
 public class CreateDonationRequestUseCase {
 
   private final DonationRequestRepositoryInterface donationRequestRepository;
-  private final PartyRepositoryInterface partyRepository;
+  private final RequesterRepositoryInterface requesterRepository;
+  private final BloodCenterRepositoryInterface bloodCenterRepository;
 
   public CreateDonationRequestUseCase(DonationRequestRepositoryInterface donationRequestRepository,
-      PartyRepositoryInterface partyRepository) {
+      RequesterRepositoryInterface requesterRepository,
+      BloodCenterRepositoryInterface bloodCenterRepository) {
     if (donationRequestRepository == null) {
       throw new IllegalArgumentException("DonationRequestRepository cannot be null");
     }
-    if (partyRepository == null) {
-      throw new IllegalArgumentException("PartyRepository cannot be null");
+    if (requesterRepository == null) {
+      throw new IllegalArgumentException("RequesterRepository cannot be null");
+    }
+    if (bloodCenterRepository == null) {
+      throw new IllegalArgumentException("BloodCenterRepository cannot be null");
     }
     this.donationRequestRepository = donationRequestRepository;
-    this.partyRepository = partyRepository;
+    this.requesterRepository = requesterRepository;
+    this.bloodCenterRepository = bloodCenterRepository;
   }
 
   public DonationRequest execute(
@@ -61,17 +67,11 @@ public class CreateDonationRequestUseCase {
     if (dateLimit.isBefore(currentDate))
       throw new IllegalArgumentException("Date limit cannot be before current date");
 
-    Party requesterParty = partyRepository.findById(requesterID)
-        .orElseThrow(() -> new IllegalArgumentException("Requester party not found"));
+    Requester requester = requesterRepository.findByPartyId(requesterID)
+      .orElseThrow(() -> new IllegalArgumentException("Requester role not found"));
 
-    Requester requester = requesterParty.getRole(Requester.class)
-        .orElseThrow(() -> new IllegalArgumentException("Party does not have Requester role"));
-
-    Party bloodCenterParty = partyRepository.findById(bloodCenterID)
-        .orElseThrow(() -> new IllegalArgumentException("Blood center party not found"));
-
-    BloodCenter bloodCenter = bloodCenterParty.getRole(BloodCenter.class)
-        .orElseThrow(() -> new IllegalArgumentException("Party does not have BloodCenter role"));
+    BloodCenter bloodCenter = bloodCenterRepository.findByPartyId(bloodCenterID)
+      .orElseThrow(() -> new IllegalArgumentException("Blood center role not found"));
 
     DonationRequest request = DonationRequest.create(
         requester,

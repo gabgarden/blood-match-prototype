@@ -1,6 +1,6 @@
 package bloodmatch.domain.roles.person.donor;
 
-import bloodmatch.domain.party.Man;
+import bloodmatch.domain.party.Person;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 
 import java.time.LocalDate;
@@ -8,11 +8,11 @@ import java.time.LocalDate;
 public class MaleDonor extends Donor {
 
   public MaleDonor(
-      Man man,
+      Person person,
       BloodType bloodType,
       double weight) {
 
-    super(man, bloodType, weight);
+    super(person, bloodType, weight);
   }
 
   @Override

@@ -58,8 +58,6 @@ public class DonationRequest extends DomainObject {
       LocalDate currentDate) {
     if (requester == null)
       throw new IllegalArgumentException("Requester cannot be null");
-    if (!requester.isValidRequester())
-      throw new IllegalArgumentException("Invalid requester");
     if (bloodCenter == null)
       throw new IllegalArgumentException("Blood center cannot be null");
     if (bloodTypeNeeded == null)

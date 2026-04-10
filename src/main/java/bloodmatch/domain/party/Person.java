@@ -5,13 +5,13 @@ import java.time.Period;
 
 import bloodmatch.domain.shared.valueObjects.CPF;
 
-public abstract class Person extends Party {
+public class Person extends Party {
 
     protected CPF cpf;
 
     protected LocalDate birthDate;
 
-    protected Person(
+    public Person(
             String name,
             CPF cpf,
             LocalDate birthDate) {

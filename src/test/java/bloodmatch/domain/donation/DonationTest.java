@@ -1,7 +1,7 @@
 package bloodmatch.domain.donation;
 
 import bloodmatch.domain.donationRequest.DonationRequest;
-import bloodmatch.domain.party.Man;
+import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.MaleDonor;
@@ -147,15 +147,12 @@ class DonationTest {
   }
 
   private Requester createRequester() {
-    Man person = new Man(
+    Person person = new Person(
         "Requester Person",
         new CPF("12345678901"),
         LocalDate.of(1995, 1, 1));
 
-    Requester requester = new Requester(person);
-    person.addRole(requester);
-
-    return requester;
+    return new Requester(person);
   }
 
   private BloodCenter createBloodCenter(String cnpjValue) {
@@ -164,13 +161,11 @@ class DonationTest {
         new CNPJ(cnpjValue));
 
     BloodCenter bloodCenter = new BloodCenter(organization);
-    organization.addRole(bloodCenter);
-
     return bloodCenter;
   }
 
   private MaleDonor createEligibleDonor(String bloodType, LocalDate currentDate) {
-    Man donorPerson = new Man(
+    Person donorPerson = new Person(
         "Donor Person",
         new CPF("98765432100"),
         currentDate.minusYears(30));
