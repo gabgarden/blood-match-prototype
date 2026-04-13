@@ -4,7 +4,7 @@ import bloodmatch.domain.donationRequest.DonationRequest;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
-import bloodmatch.domain.roles.person.donor.MaleDonor;
+import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
@@ -23,7 +23,7 @@ class DonationFactoryTest {
   void shouldRegisterExternalDonationAndUpdateDonorLastDonationDate() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
     Donation donation = factory.createExternalDonation(donor, bloodCenter, today);
@@ -38,7 +38,7 @@ class DonationFactoryTest {
   void shouldThrowWhenDonorNotEligibleForExternalDonation() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     donor.registerDonation(today.minusMonths(1));
 
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
@@ -52,7 +52,7 @@ class DonationFactoryTest {
   void shouldRegisterDonationFromRequestAndUpdateDonorLastDonationDate() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
@@ -76,7 +76,7 @@ class DonationFactoryTest {
   void shouldThrowWhenDonorDidNotAcceptRequest() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
@@ -95,7 +95,7 @@ class DonationFactoryTest {
   void shouldThrowWhenDonorNotEligibleInRequestFlow() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
@@ -131,13 +131,13 @@ class DonationFactoryTest {
     return bloodCenter;
   }
 
-  private MaleDonor createEligibleDonor(String bloodType, LocalDate currentDate) {
+  private Donor createEligibleDonor(String bloodType, LocalDate currentDate) {
     Person donorPerson = new Person(
         "Donor Person",
         new CPF("98765432100"),
         currentDate.minusYears(30));
 
-    return new MaleDonor(
+    return new Donor(
         donorPerson,
         BloodType.of(bloodType),
         75.0);

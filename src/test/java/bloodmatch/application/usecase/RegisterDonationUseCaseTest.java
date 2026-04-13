@@ -5,7 +5,7 @@ import bloodmatch.domain.donation.DonationFactory;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
-import bloodmatch.domain.roles.person.donor.MaleDonor;
+import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
 import bloodmatch.domain.shared.valueObjects.CPF;
@@ -51,7 +51,7 @@ class RegisterDonationUseCaseTest {
         "Donor Person",
         new CPF("98765432100"),
         LocalDate.of(1996, 1, 1));
-    MaleDonor donor = new MaleDonor(donorParty, BloodType.of("O-"), 75.0);
+    Donor donor = new Donor(donorParty, BloodType.of("O-"), 75.0);
 
     Organization bloodCenterParty = new Organization(
         "Main Blood Center",
@@ -80,7 +80,7 @@ class RegisterDonationUseCaseTest {
         "Donor Person",
         new CPF("98765432100"),
         LocalDate.of(1996, 1, 1));
-    MaleDonor donor = new MaleDonor(donorParty, BloodType.of("O-"), 75.0);
+    Donor donor = new Donor(donorParty, BloodType.of("O-"), 75.0);
 
     when(donorRepository.findByPartyId(donorId)).thenReturn(Optional.of(donor));
     when(donationRequestRepository.findById(requestId)).thenReturn(Optional.empty());

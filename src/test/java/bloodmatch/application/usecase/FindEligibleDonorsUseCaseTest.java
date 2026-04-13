@@ -6,7 +6,6 @@ import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
-import bloodmatch.domain.roles.person.donor.MaleDonor;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
@@ -47,7 +46,7 @@ class FindEligibleDonorsUseCaseTest {
     DomainID donorId = DomainID.generate();
 
     DonationRequest request = createDonationRequest(currentDate);
-    MaleDonor donor = createDonor(currentDate, "98765432100");
+    Donor donor = createDonor(currentDate, "98765432100");
 
     List<Donor> eligible = List.of(donor);
 
@@ -74,8 +73,8 @@ class FindEligibleDonorsUseCaseTest {
     DomainID donorId2 = DomainID.generate();
 
     DonationRequest request = createDonationRequest(currentDate);
-    MaleDonor donor1 = createDonor(currentDate, "98765432100");
-    MaleDonor donor2 = createDonor(currentDate, "12312312399");
+    Donor donor1 = createDonor(currentDate, "98765432100");
+    Donor donor2 = createDonor(currentDate, "12312312399");
 
     when(donationRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
     when(donorRepository.findByPartyId(donorId1)).thenReturn(Optional.of(donor1));
@@ -111,8 +110,8 @@ class FindEligibleDonorsUseCaseTest {
         currentDate);
   }
 
-  private MaleDonor createDonor(LocalDate currentDate, String cpf) {
-    return new MaleDonor(
+  private Donor createDonor(LocalDate currentDate, String cpf) {
+    return new Donor(
                 new Person(
             "Donor Person",
             new CPF(cpf),

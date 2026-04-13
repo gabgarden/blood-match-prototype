@@ -3,7 +3,6 @@ package bloodmatch.domain.donationRequest;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
-import bloodmatch.domain.roles.person.donor.MaleDonor;
 import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
@@ -37,7 +36,7 @@ class DonationRequestTest {
     return bloodCenter;
   }
 
-  private MaleDonor createEligibleMaleDonor(
+  private Donor createEligibleDonor(
       String bloodType,
       LocalDate currentDate) {
 
@@ -46,7 +45,7 @@ class DonationRequestTest {
         new CPF("98765432100"),
         currentDate.minusYears(30));
 
-    return new MaleDonor(
+    return new Donor(
         donorPerson,
         BloodType.of(bloodType),
         75.0);
@@ -87,7 +86,7 @@ class DonationRequestTest {
 
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter();
-    MaleDonor donor = createEligibleMaleDonor("O-", currentDate);
+    Donor donor = createEligibleDonor("O-", currentDate);
 
     DonationRequest request = DonationRequest.create(
         requester,
@@ -106,7 +105,7 @@ class DonationRequestTest {
 
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter();
-    MaleDonor donor = createEligibleMaleDonor("O-", currentDate);
+    Donor donor = createEligibleDonor("O-", currentDate);
 
     donor.registerDonation(currentDate.minusMonths(1));
 
@@ -127,7 +126,7 @@ class DonationRequestTest {
 
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter();
-    MaleDonor donor = createEligibleMaleDonor("O-", currentDate);
+    Donor donor = createEligibleDonor("O-", currentDate);
 
     DonationRequest request = DonationRequest.create(
         requester,
@@ -148,7 +147,7 @@ class DonationRequestTest {
 
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter();
-    MaleDonor donor = createEligibleMaleDonor("O-", currentDate);
+    Donor donor = createEligibleDonor("O-", currentDate);
 
     DonationRequest request = DonationRequest.create(
         requester,

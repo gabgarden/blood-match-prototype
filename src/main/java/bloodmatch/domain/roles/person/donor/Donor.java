@@ -6,13 +6,13 @@ import bloodmatch.domain.shared.valueObjects.BloodType;
 
 import java.time.LocalDate;
 
-public abstract class Donor extends PersonRole {
+public class Donor extends PersonRole {
 
     protected BloodType bloodType;
     protected LocalDate lastDonationDate;
     protected double weight;
 
-    protected Donor(
+    public Donor(
             Person person,
             BloodType bloodType,
             double weight) {
@@ -44,7 +44,18 @@ public abstract class Donor extends PersonRole {
         return age >= 16 && age <= 69;
     }
 
-    public abstract boolean isEligibleToDonate(LocalDate currentDate);
+    public boolean isEligibleToDonate(LocalDate currentDate) {
+
+        if (!hasValidAge(currentDate))
+            return false;
+
+        if (lastDonationDate == null)
+            return true;
+
+        return !lastDonationDate
+            .plusMonths(3)
+            .isAfter(currentDate);
+    }
 
     public void registerDonation(LocalDate donationDate) {
         registerDonation(donationDate, LocalDate.now());

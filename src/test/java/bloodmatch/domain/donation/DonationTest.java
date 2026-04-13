@@ -4,7 +4,7 @@ import bloodmatch.domain.donationRequest.DonationRequest;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
-import bloodmatch.domain.roles.person.donor.MaleDonor;
+import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
@@ -21,7 +21,7 @@ class DonationTest {
   void shouldCreateExternalDonation() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
     Donation donation = Donation.registerExternalDonation(
@@ -41,7 +41,7 @@ class DonationTest {
   void shouldCreateDonationFromRequest() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
@@ -69,7 +69,7 @@ class DonationTest {
   void shouldThrowWhenDonationDateIsFutureForExternalDonation() {
     LocalDate tomorrow = LocalDate.now().plusDays(1);
 
-    MaleDonor donor = createEligibleDonor("O-", LocalDate.now());
+    Donor donor = createEligibleDonor("O-", LocalDate.now());
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
     assertThrows(
@@ -82,7 +82,7 @@ class DonationTest {
     LocalDate today = LocalDate.now();
     LocalDate tomorrow = today.plusDays(1);
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
@@ -101,7 +101,7 @@ class DonationTest {
   void shouldThrowWhenBloodCenterDiffersFromRequestBloodCenter() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter requestBloodCenter = createBloodCenter("12345678000100");
     BloodCenter anotherBloodCenter = createBloodCenter("00987654000199");
@@ -125,7 +125,7 @@ class DonationTest {
   void shouldThrowWhenRequestIsInactive() {
     LocalDate today = LocalDate.now();
 
-    MaleDonor donor = createEligibleDonor("O-", today);
+    Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
     BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
@@ -164,13 +164,13 @@ class DonationTest {
     return bloodCenter;
   }
 
-  private MaleDonor createEligibleDonor(String bloodType, LocalDate currentDate) {
+  private Donor createEligibleDonor(String bloodType, LocalDate currentDate) {
     Person donorPerson = new Person(
         "Donor Person",
         new CPF("98765432100"),
         currentDate.minusYears(30));
 
-    return new MaleDonor(
+    return new Donor(
         donorPerson,
         BloodType.of(bloodType),
         75.0);
