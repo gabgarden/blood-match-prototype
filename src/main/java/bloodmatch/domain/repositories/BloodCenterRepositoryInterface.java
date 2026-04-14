@@ -1,4 +1,4 @@
-package bloodmatch.interfaces;
+package bloodmatch.domain.repositories;
 
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.shared.valueObjects.DomainID;

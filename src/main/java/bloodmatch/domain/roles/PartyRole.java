@@ -1,8 +1,9 @@
 package bloodmatch.domain.roles;
 
 import bloodmatch.domain.party.Party;
+import bloodmatch.domain.shared.entity.DomainObject;
 
-public abstract class PartyRole<T extends Party> {
+public abstract class PartyRole<T extends Party> extends DomainObject {
 
   protected T party;
 
@@ -12,6 +13,7 @@ public abstract class PartyRole<T extends Party> {
       throw new IllegalArgumentException("Party cannot be null");
 
     this.party = party;
+    this.id = party.getId();
   }
 
   public T getParty() {

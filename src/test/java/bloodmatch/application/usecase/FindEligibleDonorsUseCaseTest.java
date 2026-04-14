@@ -1,8 +1,11 @@
 package bloodmatch.application.usecase;
 
-import bloodmatch.domain.donationRequest.DonationRequest;
+import bloodmatch.application.usecase.donationrequest.FindEligibleDonorsUseCase;
+import bloodmatch.domain.donationrequest.DonationRequest;
 import bloodmatch.domain.matching.DonorMatchingService;
 import bloodmatch.domain.party.Person;
+import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
+import bloodmatch.domain.repositories.DonorRepositoryInterface;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
@@ -11,9 +14,8 @@ import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
 import bloodmatch.domain.shared.valueObjects.CPF;
 import bloodmatch.domain.shared.valueObjects.DomainID;
-import bloodmatch.interfaces.DonationRequestRepositoryInterface;
 import bloodmatch.interfaces.DonorRecommendationPolicyInterface;
-import bloodmatch.interfaces.DonorRepositoryInterface;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

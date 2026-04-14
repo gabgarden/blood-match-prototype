@@ -1,8 +1,13 @@
 package bloodmatch.application.usecase;
 
+import bloodmatch.application.usecase.donation.RegisterDonationUseCase;
 import bloodmatch.domain.donation.Donation;
 import bloodmatch.domain.donation.DonationFactory;
 import bloodmatch.domain.party.Person;
+import bloodmatch.domain.repositories.DonationRepositoryInterface;
+import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
+import bloodmatch.domain.repositories.DonorRepositoryInterface;
+import bloodmatch.domain.repositories.PartyRepositoryInterface;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
@@ -10,10 +15,7 @@ import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
 import bloodmatch.domain.shared.valueObjects.CPF;
 import bloodmatch.domain.shared.valueObjects.DomainID;
-import bloodmatch.interfaces.BloodCenterRepositoryInterface;
-import bloodmatch.interfaces.DonorRepositoryInterface;
-import bloodmatch.interfaces.DonationRepositoryInterface;
-import bloodmatch.interfaces.DonationRequestRepositoryInterface;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -28,16 +30,16 @@ import static org.mockito.Mockito.when;
 class RegisterDonationUseCaseTest {
 
   private final DonationFactory donationFactory = mock(DonationFactory.class);
-    private final DonorRepositoryInterface donorRepository = mock(DonorRepositoryInterface.class);
-    private final BloodCenterRepositoryInterface bloodCenterRepository = mock(BloodCenterRepositoryInterface.class);
+  private final DonorRepositoryInterface donorRepository = mock(DonorRepositoryInterface.class);
+  private final PartyRepositoryInterface partyRepository = mock(PartyRepositoryInterface.class);
   private final DonationRequestRepositoryInterface donationRequestRepository = mock(
       DonationRequestRepositoryInterface.class);
   private final DonationRepositoryInterface donationRepository = mock(DonationRepositoryInterface.class);
 
   private final RegisterDonationUseCase useCase = new RegisterDonationUseCase(
       donationFactory,
-            donorRepository,
-            bloodCenterRepository,
+      donorRepository,
+      partyRepository,
       donationRequestRepository,
       donationRepository);
 
@@ -61,7 +63,7 @@ class RegisterDonationUseCaseTest {
     Donation donation = mock(Donation.class);
 
     when(donorRepository.findByPartyId(donorId)).thenReturn(Optional.of(donor));
-    when(bloodCenterRepository.findByPartyId(bloodCenterId)).thenReturn(Optional.of(bloodCenter));
+    when(partyRepository.findById(bloodCenterId)).thenReturn(Optional.of(bloodCenterParty));
     when(donationFactory.createExternalDonation(donor, bloodCenter, date)).thenReturn(donation);
 
     Donation result = useCase.executeExternal(donorId, bloodCenterId, date);

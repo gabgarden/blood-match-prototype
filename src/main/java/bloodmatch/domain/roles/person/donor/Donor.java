@@ -70,6 +70,20 @@ public class Donor extends PersonRole {
         if (donationDate.isAfter(currentDate))
             throw new IllegalArgumentException("Donation date cannot be in the future");
         this.lastDonationDate = donationDate;
+        notifyObservers();
+    }
+
+    public void updateProfile(BloodType bloodType, double weight) {
+
+        if (bloodType == null)
+            throw new IllegalArgumentException("Blood type cannot be null");
+
+        if (weight < 50)
+            throw new IllegalArgumentException("Minimum weight is 50kg");
+
+        this.bloodType = bloodType;
+        this.weight = weight;
+        notifyObservers();
     }
 
     public BloodType getBloodType() {
@@ -78,6 +92,10 @@ public class Donor extends PersonRole {
 
     public LocalDate getLastDonationDate() {
         return lastDonationDate;
+    }
+
+    public double getWeight() {
+        return weight;
     }
 
 }

@@ -1,17 +1,18 @@
 package bloodmatch.application.usecase;
 
-import bloodmatch.domain.donationRequest.DonationRequest;
+import bloodmatch.application.usecase.donationrequest.CreateDonationRequestUseCase;
 import bloodmatch.domain.party.Person;
+import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
+import bloodmatch.domain.repositories.PartyRepositoryInterface;
+import bloodmatch.domain.repositories.RequesterRepositoryInterface;
+import bloodmatch.domain.donationrequest.DonationRequest;
 import bloodmatch.domain.party.Organization;
-import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
 import bloodmatch.domain.shared.valueObjects.CPF;
 import bloodmatch.domain.shared.valueObjects.DomainID;
-import bloodmatch.interfaces.BloodCenterRepositoryInterface;
-import bloodmatch.interfaces.DonationRequestRepositoryInterface;
-import bloodmatch.interfaces.RequesterRepositoryInterface;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -29,12 +30,12 @@ class CreateDonationRequestUseCaseTest {
 
   private final DonationRequestRepositoryInterface donationRequestRepository = mock(
       DonationRequestRepositoryInterface.class);
-    private final RequesterRepositoryInterface requesterRepository = mock(RequesterRepositoryInterface.class);
-    private final BloodCenterRepositoryInterface bloodCenterRepository = mock(BloodCenterRepositoryInterface.class);
+  private final RequesterRepositoryInterface requesterRepository = mock(RequesterRepositoryInterface.class);
+  private final PartyRepositoryInterface partyRepository = mock(PartyRepositoryInterface.class);
 
   private final CreateDonationRequestUseCase useCase = new CreateDonationRequestUseCase(donationRequestRepository,
-            requesterRepository,
-            bloodCenterRepository);
+      requesterRepository,
+      partyRepository);
 
   @Test
   void shouldCreateAndSaveDonationRequest() {
@@ -50,13 +51,11 @@ class CreateDonationRequestUseCaseTest {
     Organization bloodCenterParty = new Organization(
         "Main Blood Center",
         new CNPJ("12345678000100"));
-    BloodCenter bloodCenter = new BloodCenter(bloodCenterParty);
-
     DomainID requesterId = DomainID.generate();
     DomainID bloodCenterId = DomainID.generate();
 
     when(requesterRepository.findByPartyId(requesterId)).thenReturn(Optional.of(requester));
-    when(bloodCenterRepository.findByPartyId(bloodCenterId)).thenReturn(Optional.of(bloodCenter));
+    when(partyRepository.findById(bloodCenterId)).thenReturn(Optional.of(bloodCenterParty));
 
     DonationRequest request = useCase.execute(
         requesterId,
@@ -80,10 +79,8 @@ class CreateDonationRequestUseCaseTest {
     Organization bloodCenterParty = new Organization(
         "Main Blood Center",
         new CNPJ("12345678000100"));
-    BloodCenter bloodCenter = new BloodCenter(bloodCenterParty);
-
-        when(requesterRepository.findByPartyId(requesterId)).thenReturn(Optional.empty());
-        when(bloodCenterRepository.findByPartyId(bloodCenterId)).thenReturn(Optional.of(bloodCenter));
+    when(requesterRepository.findByPartyId(requesterId)).thenReturn(Optional.empty());
+    when(partyRepository.findById(bloodCenterId)).thenReturn(Optional.of(bloodCenterParty));
 
     assertThrows(
         IllegalArgumentException.class,

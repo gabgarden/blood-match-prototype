@@ -1,7 +1,7 @@
 package bloodmatch.domain.donation;
 
+import bloodmatch.domain.donationrequest.DonationRequest;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
-import bloodmatch.domain.donationRequest.DonationRequest;
 import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.shared.entity.DomainObject;
 import bloodmatch.domain.shared.valueObjects.DomainID;

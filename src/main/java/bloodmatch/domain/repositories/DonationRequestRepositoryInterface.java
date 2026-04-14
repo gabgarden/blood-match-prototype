@@ -1,10 +1,11 @@
-package bloodmatch.interfaces;
+package bloodmatch.domain.repositories;
 
+import bloodmatch.domain.donationrequest.DonationRequest;
 import bloodmatch.domain.shared.valueObjects.DomainID;
-import bloodmatch.domain.donationRequest.DonationRequest;
 
 import java.util.List;
 import java.util.Optional;
+
 
 public interface DonationRequestRepositoryInterface {
 

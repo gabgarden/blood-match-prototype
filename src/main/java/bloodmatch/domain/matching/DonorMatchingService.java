@@ -1,6 +1,6 @@
 package bloodmatch.domain.matching;
 
-import bloodmatch.domain.donationRequest.DonationRequest;
+import bloodmatch.domain.donationrequest.DonationRequest;
 import bloodmatch.domain.roles.person.donor.Donor;
 
 import java.time.LocalDate;

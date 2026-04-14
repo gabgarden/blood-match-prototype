@@ -1,37 +1,41 @@
-package bloodmatch.application.usecase;
+package bloodmatch.application.usecase.donationrequest;
 
-import bloodmatch.domain.donationRequest.DonationRequest;
+import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
+import bloodmatch.domain.repositories.PartyRepositoryInterface;
+import bloodmatch.domain.repositories.RequesterRepositoryInterface;
+import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.DomainID;
-import bloodmatch.interfaces.BloodCenterRepositoryInterface;
-import bloodmatch.interfaces.DonationRequestRepositoryInterface;
-import bloodmatch.interfaces.RequesterRepositoryInterface;
 
 import java.time.LocalDate;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class CreateDonationRequestUseCase {
 
   private final DonationRequestRepositoryInterface donationRequestRepository;
   private final RequesterRepositoryInterface requesterRepository;
-  private final BloodCenterRepositoryInterface bloodCenterRepository;
+    private final PartyRepositoryInterface partyRepository;
 
   public CreateDonationRequestUseCase(DonationRequestRepositoryInterface donationRequestRepository,
       RequesterRepositoryInterface requesterRepository,
-      BloodCenterRepositoryInterface bloodCenterRepository) {
+      PartyRepositoryInterface partyRepository) {
     if (donationRequestRepository == null) {
       throw new IllegalArgumentException("DonationRequestRepository cannot be null");
     }
     if (requesterRepository == null) {
       throw new IllegalArgumentException("RequesterRepository cannot be null");
     }
-    if (bloodCenterRepository == null) {
-      throw new IllegalArgumentException("BloodCenterRepository cannot be null");
+    if (partyRepository == null) {
+      throw new IllegalArgumentException("PartyRepository cannot be null");
     }
     this.donationRequestRepository = donationRequestRepository;
     this.requesterRepository = requesterRepository;
-    this.bloodCenterRepository = bloodCenterRepository;
+    this.partyRepository = partyRepository;
   }
 
   public DonationRequest execute(
@@ -70,8 +74,12 @@ public class CreateDonationRequestUseCase {
     Requester requester = requesterRepository.findByPartyId(requesterID)
       .orElseThrow(() -> new IllegalArgumentException("Requester role not found"));
 
-    BloodCenter bloodCenter = bloodCenterRepository.findByPartyId(bloodCenterID)
-      .orElseThrow(() -> new IllegalArgumentException("Blood center role not found"));
+    Organization organization = partyRepository.findById(bloodCenterID)
+      .filter(Organization.class::isInstance)
+      .map(Organization.class::cast)
+      .orElseThrow(() -> new IllegalArgumentException("Blood center organization not found"));
+
+    BloodCenter bloodCenter = new BloodCenter(organization);
 
     DonationRequest request = DonationRequest.create(
         requester,

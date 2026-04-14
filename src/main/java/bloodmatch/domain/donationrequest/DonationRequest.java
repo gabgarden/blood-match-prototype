@@ -1,4 +1,4 @@
-package bloodmatch.domain.donationRequest;
+package bloodmatch.domain.donationrequest;
 
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
@@ -76,11 +76,51 @@ public class DonationRequest extends DomainObject {
         currentDate);
   }
 
+  public static DonationRequest reconstitute(
+      DomainID id,
+      Requester requester,
+      BloodCenter bloodCenter,
+      BloodType bloodTypeNeeded,
+      LocalDate dateRequested,
+      LocalDate dateLimit,
+      boolean active,
+      List<Donor> acceptedDonors) {
+
+    if (id == null)
+      throw new IllegalArgumentException("Id cannot be null");
+    if (requester == null)
+      throw new IllegalArgumentException("Requester cannot be null");
+    if (bloodCenter == null)
+      throw new IllegalArgumentException("Blood center cannot be null");
+    if (bloodTypeNeeded == null)
+      throw new IllegalArgumentException("Blood type cannot be null");
+    if (dateRequested == null)
+      throw new IllegalArgumentException("Requested date cannot be null");
+    if (dateLimit == null)
+      throw new IllegalArgumentException("Limit date cannot be null");
+    if (acceptedDonors == null)
+      throw new IllegalArgumentException("Accepted donors cannot be null");
+
+    DonationRequest request = new DonationRequest(
+        requester,
+        bloodCenter,
+        bloodTypeNeeded,
+        dateLimit,
+        dateRequested);
+
+    request.setId(id);
+    request.dateRequested = dateRequested;
+    request.active = active;
+    request.acceptedDonors = new ArrayList<>(acceptedDonors);
+    return request;
+  }
+
   public void close() {
     if (!active)
       throw new IllegalStateException("Request already closed");
 
     this.active = false;
+    notifyObservers();
   }
 
   public boolean isActive() {
@@ -146,6 +186,7 @@ public class DonationRequest extends DomainObject {
       throw new IllegalStateException("Donor already accepted this request");
 
     acceptedDonors.add(donor);
+    notifyObservers();
   }
 
   public BloodType getBloodTypeNeeded() {
