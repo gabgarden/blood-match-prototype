@@ -58,12 +58,10 @@ public class AcceptDonorInRequestUseCase {
         .orElseThrow(() -> new IllegalArgumentException("Donor role not found"));
 
     // 3. Muta o domínio (aceita o donor na request)
-    // Observer sincroniza o schema em memória via update()
     request.acceptBy(donor, currentDate);
 
     // 4. PERSISTÊNCIA EXPLÍCITA: Salva a mutação no MongoDB
     // Importante: sem este save(), a mudança fica só em memória
-    // O Observer mantem o schema sincronizado, mas MongoDB não sabe da mudança
     donationRequestRepository.save(request);
   }
 }

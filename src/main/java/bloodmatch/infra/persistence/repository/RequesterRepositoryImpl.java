@@ -28,29 +28,8 @@ public class RequesterRepositoryImpl implements RequesterRepositoryInterface {
     if (partyId == null)
       throw new IllegalArgumentException("Party id cannot be null");
 
-    return find(partyId);
-  }
-
-  public void add(Requester requester) {
-    if (requester == null)
-      throw new IllegalArgumentException("Requester cannot be null");
-
-    mongoRepository.save(new RequesterSchema(requester));
-  }
-
-  public void remove(Requester requester) {
-    if (requester == null)
-      throw new IllegalArgumentException("Requester cannot be null");
-
-    mongoRepository.deleteById(requester.getParty().getId().getValue().toString());
-  }
-
-  public Optional<Requester> find(DomainID partyId) {
-    if (partyId == null)
-      throw new IllegalArgumentException("Party id cannot be null");
-
     return mongoRepository.findByPartyId(partyId.getValue().toString())
-      .map(schema -> schema.toDomain(partyRepository));
+        .map(schema -> schema.toDomain(partyRepository));
   }
 
   @Override

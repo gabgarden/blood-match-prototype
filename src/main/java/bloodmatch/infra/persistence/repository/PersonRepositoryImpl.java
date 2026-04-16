@@ -12,10 +12,10 @@ import java.util.Optional;
 @Repository
 public class PersonRepositoryImpl implements PersonRepositoryInterface {
 
-  private final PartyMongoRepository partyMongoRepository;
+  private final PartyMongoRepository mongoRepository;
 
-  public PersonRepositoryImpl(PartyMongoRepository partyMongoRepository) {
-    this.partyMongoRepository = partyMongoRepository;
+  public PersonRepositoryImpl(PartyMongoRepository mongoRepository) {
+    this.mongoRepository = mongoRepository;
   }
 
   @Override
@@ -23,7 +23,7 @@ public class PersonRepositoryImpl implements PersonRepositoryInterface {
     if (personId == null)
       throw new IllegalArgumentException("Person id cannot be null");
 
-    return partyMongoRepository.findByIdAndPartyType(personId.getValue().toString(), PartySchema.TYPE_PERSON)
+    return mongoRepository.findByIdAndPartyType(personId.getValue().toString(), PartySchema.TYPE_PERSON)
         .map(PartySchema::toDomain)
         .map(Person.class::cast);
   }
@@ -33,6 +33,6 @@ public class PersonRepositoryImpl implements PersonRepositoryInterface {
     if (person == null)
       throw new IllegalArgumentException("Person cannot be null");
 
-    partyMongoRepository.save(new PartySchema(person));
+    mongoRepository.save(new PartySchema(person));
   }
 }

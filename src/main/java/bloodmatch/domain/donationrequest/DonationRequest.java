@@ -120,7 +120,6 @@ public class DonationRequest extends DomainObject {
       throw new IllegalStateException("Request already closed");
 
     this.active = false;
-    notifyObservers();
   }
 
   public boolean isActive() {
@@ -186,7 +185,6 @@ public class DonationRequest extends DomainObject {
       throw new IllegalStateException("Donor already accepted this request");
 
     acceptedDonors.add(donor);
-    notifyObservers();
   }
 
   public BloodType getBloodTypeNeeded() {

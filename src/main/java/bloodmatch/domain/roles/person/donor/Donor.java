@@ -70,7 +70,6 @@ public class Donor extends PersonRole {
         if (donationDate.isAfter(currentDate))
             throw new IllegalArgumentException("Donation date cannot be in the future");
         this.lastDonationDate = donationDate;
-        notifyObservers();
     }
 
     public void updateProfile(BloodType bloodType, double weight) {
@@ -83,7 +82,6 @@ public class Donor extends PersonRole {
 
         this.bloodType = bloodType;
         this.weight = weight;
-        notifyObservers();
     }
 
     public BloodType getBloodType() {

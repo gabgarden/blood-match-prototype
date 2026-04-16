@@ -3,7 +3,6 @@ package bloodmatch.infra.persistence.schema;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.party.Party;
 import bloodmatch.domain.party.Person;
-import bloodmatch.domain.shared.entity.Observer;
 import bloodmatch.domain.shared.valueObjects.CNPJ;
 import bloodmatch.domain.shared.valueObjects.CPF;
 import bloodmatch.domain.shared.valueObjects.DomainID;
@@ -12,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartySchema implements Observer {
+public class PartySchema {
 
   public static final String TYPE_PERSON = "PERSON";
   public static final String TYPE_ORGANIZATION = "ORGANIZATION";
@@ -36,42 +34,14 @@ public class PartySchema implements Observer {
   private LocalDate birthDate;
   private String cnpj;
 
-  @Transient
-  private Party subject;
-
-  public PartySchema(Party subject) {
-    if (subject == null)
+  public PartySchema(Party party) {
+    if (party == null)
       throw new IllegalArgumentException("Party cannot be null");
 
-    this.subject = subject;
-    this.subject.addObserver(this);
-    this.update();
-  }
+    this.id = party.getId().getValue().toString();
+    this.name = party.getName();
 
-  public Party toDomain() {
-    if (subject == null) {
-      DomainID partyId = new DomainID(UUID.fromString(this.id));
-
-      if (TYPE_PERSON.equals(this.partyType)) {
-        this.subject = new PersistedPerson(partyId, this.name, new CPF(this.cpf), this.birthDate);
-      } else if (TYPE_ORGANIZATION.equals(this.partyType)) {
-        this.subject = new PersistedOrganization(partyId, this.name, new CNPJ(this.cnpj));
-      } else {
-        throw new IllegalStateException("Unsupported party type: " + this.partyType);
-      }
-
-      this.subject.addObserver(this);
-    }
-
-    return this.subject;
-  }
-
-  @Override
-  public void update() {
-    this.id = subject.getId().getValue().toString();
-    this.name = subject.getName();
-
-    if (subject instanceof Person person) {
+    if (party instanceof Person person) {
       this.partyType = TYPE_PERSON;
       this.cpf = person.getCpf().getValue();
       this.birthDate = person.getBirthDate();
@@ -79,7 +49,7 @@ public class PartySchema implements Observer {
       return;
     }
 
-    if (subject instanceof Organization organization) {
+    if (party instanceof Organization organization) {
       this.partyType = TYPE_ORGANIZATION;
       this.cnpj = organization.getCnpj().getValue();
       this.cpf = null;
@@ -87,7 +57,21 @@ public class PartySchema implements Observer {
       return;
     }
 
-    throw new IllegalStateException("Unsupported party subtype: " + subject.getClass().getName());
+    throw new IllegalStateException("Unsupported party subtype: " + party.getClass().getName());
+  }
+
+  public Party toDomain() {
+    DomainID partyId = new DomainID(UUID.fromString(this.id));
+
+    if (TYPE_PERSON.equals(this.partyType)) {
+      return new PersistedPerson(partyId, this.name, new CPF(this.cpf), this.birthDate);
+    }
+
+    if (TYPE_ORGANIZATION.equals(this.partyType)) {
+      return new PersistedOrganization(partyId, this.name, new CNPJ(this.cnpj));
+    }
+
+    throw new IllegalStateException("Unsupported party type: " + this.partyType);
   }
 
   private static class PersistedPerson extends Person {

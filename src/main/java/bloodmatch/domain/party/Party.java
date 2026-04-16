@@ -35,7 +35,6 @@ public abstract class Party extends DomainObject {
             throw new IllegalArgumentException("Name cannot be empty");
 
         this.name = newName;
-        notifyObservers();
     }
 
 }

@@ -31,12 +31,10 @@ public class CloseDonationRequestUseCase {
         .orElseThrow(() -> new IllegalArgumentException("Donation request not found"));
 
     // 2. Muta o domínio (fecha a request)
-    // Observer sincroniza o schema em memória via update()
     request.close();
 
     // 3. PERSISTÊNCIA EXPLÍCITA: Salva a mutação no MongoDB
-    // O seu domínio chamou notifyObservers(), então o schema está sincronizado
-    // Mas você precisa avisar ao repositório que quer persistir
+    // Sem este save(), a mudança fica somente em memória
     donationRequestRepository.save(request);
   }
 }

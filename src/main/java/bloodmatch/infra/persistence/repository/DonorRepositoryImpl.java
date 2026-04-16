@@ -28,29 +28,8 @@ public class DonorRepositoryImpl implements DonorRepositoryInterface {
     if (personId == null)
       throw new IllegalArgumentException("Person id cannot be null");
 
-    return find(personId);
-  }
-
-  public void add(Donor donor) {
-    if (donor == null)
-      throw new IllegalArgumentException("Donor cannot be null");
-
-    mongoRepository.save(new DonorSchema(donor));
-  }
-
-  public void remove(Donor donor) {
-    if (donor == null)
-      throw new IllegalArgumentException("Donor cannot be null");
-
-    mongoRepository.deleteById(donor.getPerson().getId().getValue().toString());
-  }
-
-  public Optional<Donor> find(DomainID personId) {
-    if (personId == null)
-      throw new IllegalArgumentException("Person id cannot be null");
-
     return mongoRepository.findByPersonId(personId.getValue().toString())
-      .map(schema -> schema.toDomain(personRepository));
+        .map(schema -> schema.toDomain(personRepository));
   }
 
   @Override

@@ -3,7 +3,6 @@ package bloodmatch.infra.persistence.schema;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.repositories.PersonRepositoryInterface;
 import bloodmatch.domain.roles.person.donor.Donor;
-import bloodmatch.domain.shared.entity.Observer;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.DomainID;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
@@ -22,7 +20,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DonorSchema implements Observer {
+public class DonorSchema {
 
   @Id
   private String id;
@@ -31,42 +29,27 @@ public class DonorSchema implements Observer {
   private Double weight;
   private LocalDate lastDonationDate;
 
-  @Transient
-  private Donor subject;
-
-  public DonorSchema(Donor subject) {
-    if (subject == null)
+  public DonorSchema(Donor donor) {
+    if (donor == null)
       throw new IllegalArgumentException("Donor cannot be null");
 
-    this.subject = subject;
-    this.subject.addObserver(this);
-    this.update();
+    this.id = donor.getId().getValue().toString();
+    this.personId = donor.getPerson().getId().getValue().toString();
+    this.bloodType = donor.getBloodType().getType();
+    this.weight = donor.getWeight();
+    this.lastDonationDate = donor.getLastDonationDate();
   }
 
   public Donor toDomain(PersonRepositoryInterface personRepository) {
-    if (subject == null) {
-      DomainID persistedPersonId = new DomainID(UUID.fromString(this.personId));
-      Person person = personRepository.findById(persistedPersonId)
-          .orElseThrow(() -> new IllegalArgumentException("Person not found"));
+    DomainID personId = new DomainID(UUID.fromString(this.personId));
+    Person person = personRepository.findById(personId)
+        .orElseThrow(() -> new IllegalArgumentException("Person not found"));
 
-      Donor donor = new Donor(person, BloodType.of(bloodType), weight);
-      if (lastDonationDate != null) {
-        donor.registerDonation(lastDonationDate, lastDonationDate);
-      }
-
-      this.subject = donor;
-      this.subject.addObserver(this);
+    Donor donor = new Donor(person, BloodType.of(bloodType), weight);
+    if (lastDonationDate != null) {
+      donor.registerDonation(lastDonationDate, lastDonationDate);
     }
 
-    return this.subject;
-  }
-
-  @Override
-  public void update() {
-    this.id = subject.getId().getValue().toString();
-    this.personId = subject.getPerson().getId().getValue().toString();
-    this.bloodType = subject.getBloodType().getType();
-    this.weight = subject.getWeight();
-    this.lastDonationDate = subject.getLastDonationDate();
+    return donor;
   }
 }

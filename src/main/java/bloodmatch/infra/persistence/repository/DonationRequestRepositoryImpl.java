@@ -34,12 +34,20 @@ public class DonationRequestRepositoryImpl implements DonationRequestRepositoryI
 
   @Override
   public void save(DonationRequest request) {
-    add(request);
+    if (request == null)
+      throw new IllegalArgumentException("DonationRequest cannot be null");
+
+    DonationRequestSchema schema = new DonationRequestSchema(request);
+    mongoRepository.save(schema);
   }
 
   @Override
   public Optional<DonationRequest> findById(DomainID id) {
-    return find(id);
+    if (id == null)
+      throw new IllegalArgumentException("Donation request id cannot be null");
+
+    return mongoRepository.findById(id.getValue().toString())
+        .map(this::toDomain);
   }
 
   @Override
@@ -48,29 +56,6 @@ public class DonationRequestRepositoryImpl implements DonationRequestRepositoryI
         .stream()
         .map(this::toDomain)
         .toList();
-  }
-
-  public void add(DonationRequest request) {
-    if (request == null)
-      throw new IllegalArgumentException("DonationRequest cannot be null");
-
-    DonationRequestSchema schema = new DonationRequestSchema(request);
-    mongoRepository.save(schema);
-  }
-
-  public void remove(DonationRequest request) {
-    if (request == null)
-      throw new IllegalArgumentException("DonationRequest cannot be null");
-
-    mongoRepository.deleteById(request.getId().getValue().toString());
-  }
-
-  public Optional<DonationRequest> find(DomainID id) {
-    if (id == null)
-      throw new IllegalArgumentException("Domain id cannot be null");
-
-    return mongoRepository.findById(id.getValue().toString())
-        .map(this::toDomain);
   }
 
   private DonationRequest toDomain(DonationRequestSchema schema) {
