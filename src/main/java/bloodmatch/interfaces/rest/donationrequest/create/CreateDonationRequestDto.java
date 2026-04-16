@@ -1,4 +1,4 @@
-package bloodmatch.interfaces.rest.donationrequest;
+package bloodmatch.interfaces.rest.donationrequest.create;
 
 import java.time.LocalDate;
 

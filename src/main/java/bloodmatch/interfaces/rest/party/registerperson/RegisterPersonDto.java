@@ -1,8 +1,8 @@
-package bloodmatch.interfaces.rest.party;
+package bloodmatch.interfaces.rest.party.registerperson;
 
 import java.time.LocalDate;
 
-public record CreatePersonPartyDto(
+public record RegisterPersonDto(
     String name,
     String cpf,
     LocalDate birthDate) {

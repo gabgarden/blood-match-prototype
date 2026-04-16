@@ -1,4 +1,4 @@
-package bloodmatch.interfaces.rest.donationrequest;
+package bloodmatch.interfaces.rest.donationrequest.create;
 
 import bloodmatch.application.usecase.donationrequest.CreateDonationRequestUseCase;
 import bloodmatch.domain.donationrequest.DonationRequest;
@@ -12,31 +12,32 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
-import java.util.UUID;
+
+import static bloodmatch.interfaces.rest.shared.RequestValidationSupport.isBlank;
+import static bloodmatch.interfaces.rest.shared.RequestValidationSupport.parseDomainId;
 
 @RestController
 @RequestMapping("/donation-requests")
-public class DonationRequestController {
+public class CreateDonationRequestController {
 
   private final CreateDonationRequestUseCase useCase;
 
-  public DonationRequestController(CreateDonationRequestUseCase useCase) {
+  public CreateDonationRequestController(CreateDonationRequestUseCase useCase) {
     this.useCase = useCase;
   }
 
   @PostMapping
   public ResponseEntity<Map<String, String>> create(@RequestBody CreateDonationRequestDto payload) {
-
     try {
       validatePayload(payload);
 
-      DomainID requesterId = parseDomainId(payload.requesterId(), "requesterId");
-      DomainID bloodCenterId = parseDomainId(payload.bloodCenterId(), "bloodCenterId");
+      DomainID requesterDomainId = parseDomainId(payload.requesterId(), "requesterId");
+      DomainID bloodCenterDomainId = parseDomainId(payload.bloodCenterId(), "bloodCenterId");
       BloodType bloodTypeNeeded = BloodType.of(payload.bloodTypeNeeded());
 
       DonationRequest request = useCase.execute(
-          requesterId,
-          bloodCenterId,
+          requesterDomainId,
+          bloodCenterDomainId,
           bloodTypeNeeded,
           payload.dateLimit());
 
@@ -52,7 +53,6 @@ public class DonationRequestController {
   }
 
   private static void validatePayload(CreateDonationRequestDto payload) {
-
     if (payload == null)
       throw new IllegalArgumentException("Request body cannot be null");
 
@@ -67,18 +67,5 @@ public class DonationRequestController {
 
     if (payload.dateLimit() == null)
       throw new IllegalArgumentException("dateLimit cannot be null");
-  }
-
-  private static DomainID parseDomainId(String value, String fieldName) {
-
-    try {
-      return new DomainID(UUID.fromString(value));
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException(fieldName + " must be a valid UUID");
-    }
-  }
-
-  private static boolean isBlank(String value) {
-    return value == null || value.isBlank();
   }
 }

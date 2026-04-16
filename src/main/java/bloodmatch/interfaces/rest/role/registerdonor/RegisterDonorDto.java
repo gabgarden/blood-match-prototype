@@ -1,4 +1,4 @@
-package bloodmatch.interfaces.rest.role;
+package bloodmatch.interfaces.rest.role.registerdonor;
 
 public record RegisterDonorDto(
     String personId,
