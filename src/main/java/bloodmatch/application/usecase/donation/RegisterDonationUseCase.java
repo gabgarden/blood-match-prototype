@@ -71,7 +71,11 @@ public class RegisterDonationUseCase {
     BloodCenter bloodCenter = new BloodCenter(organization);
 
     Donation donation = donationFactory.createExternalDonation(donor, bloodCenter, date);
+
+    //cause donor was mutaded on the factory
     donorRepository.save(donor);
+
+
     donationRepository.save(donation);
     return donation;
   }
@@ -93,7 +97,10 @@ public class RegisterDonationUseCase {
         .orElseThrow(() -> new IllegalArgumentException("Donation request not found"));
 
     Donation donation = donationFactory.createDonationFromRequest(donor, request, date);
+
+    //cause donor was mutaded on the factory
     donorRepository.save(donor);
+
     donationRepository.save(donation);
     return donation;
   }
