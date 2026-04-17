@@ -1,19 +1,20 @@
 package bloodmatch.domain.donation;
 
-import bloodmatch.domain.roles.person.donor.Donor;
 import bloodmatch.domain.donationrequest.DonationRequest;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
+import bloodmatch.domain.roles.person.donor.Donor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+@Component
 public class DonationFactory {
 
   public Donation createExternalDonation(
       Donor donor,
       BloodCenter bloodCenter,
       LocalDate date) {
-
-    return createExternalDonation(donor, bloodCenter, date, date);
+    return createExternalDonation(donor, bloodCenter, date, LocalDate.now());
   }
 
   public Donation createExternalDonation(
@@ -33,56 +34,68 @@ public class DonationFactory {
     if (!donor.isEligibleToDonate(currentDate))
       throw new IllegalStateException("Donor not eligible");
 
-    Donation donation = Donation.registerExternalDonation(
-        donor,
-        date,
-        bloodCenter,
-        currentDate);
+    Donation donation = Donation.registerExternalDonation(donor, date, bloodCenter, currentDate);
     donor.registerDonation(date, currentDate);
-
     return donation;
-
   }
 
-  public Donation createDonationFromRequest(
+  public Donation createPendingDonationFromRequest(
       Donor donor,
       DonationRequest request,
-      LocalDate date) {
-
-    return createDonationFromRequest(donor, request, date, date);
+      LocalDate expectedDate) {
+    return createPendingDonationFromRequest(donor, request, expectedDate, LocalDate.now());
   }
 
-  public Donation createDonationFromRequest(
+  public Donation createPendingDonationFromRequest(
       Donor donor,
       DonationRequest request,
-      LocalDate date,
+      LocalDate expectedDate,
       LocalDate currentDate) {
 
     if (donor == null)
       throw new IllegalArgumentException("Donor cannot be null");
     if (request == null)
       throw new IllegalArgumentException("Request cannot be null");
-    if (date == null)
-      throw new IllegalArgumentException("Date cannot be null");
+    if (expectedDate == null)
+      throw new IllegalArgumentException("Expected date cannot be null");
     if (currentDate == null)
       throw new IllegalArgumentException("Current date cannot be null");
 
-    if (!request.getAcceptedDonors().contains(donor))
-      throw new IllegalStateException(
-          "Donor did not accept the request");
+    return Donation.scheduleFromRequest(donor, request, expectedDate, currentDate);
+  }
 
+  public Donation completePendingDonation(
+      Donation pendingDonation,
+      LocalDate completionDate) {
+    return completePendingDonation(pendingDonation, completionDate, LocalDate.now());
+  }
+
+  public Donation completePendingDonation(
+      Donation pendingDonation,
+      LocalDate completionDate,
+      LocalDate currentDate) {
+
+    if (pendingDonation == null)
+      throw new IllegalArgumentException("Donation cannot be null");
+    if (completionDate == null)
+      throw new IllegalArgumentException("Completion date cannot be null");
+    if (currentDate == null)
+      throw new IllegalArgumentException("Current date cannot be null");
+
+    Donor donor = pendingDonation.getDonor();
     if (!donor.isEligibleToDonate(currentDate))
       throw new IllegalStateException("Donor not eligible");
 
-    Donation donation = Donation.registerFromRequest(
-        donor,
-        request,
-        date,
-        request.getBloodCenter(),
-        currentDate);
+    pendingDonation.complete(completionDate, currentDate);
+    donor.registerDonation(completionDate, currentDate);
+    return pendingDonation;
+  }
 
-    donor.registerDonation(date, currentDate);
+  public Donation cancelPendingDonation(Donation pendingDonation) {
+    if (pendingDonation == null)
+      throw new IllegalArgumentException("Donation cannot be null");
 
-    return donation;
+    pendingDonation.cancel();
+    return pendingDonation;
   }
 }

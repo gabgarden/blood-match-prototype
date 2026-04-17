@@ -27,13 +27,15 @@ class DonationTest {
     Donation donation = Donation.registerExternalDonation(
         donor,
         today,
-        bloodCenter);
+      bloodCenter,
+      today);
 
     assertNotNull(donation);
     assertFalse(donation.isFromRequest());
     assertEquals(donor, donation.getDonor());
     assertEquals(today, donation.getDonationDate());
     assertEquals(bloodCenter, donation.getBloodCenter());
+    assertTrue(donation.isCompleted());
     assertNull(donation.getRequest());
   }
 
@@ -50,18 +52,20 @@ class DonationTest {
         bloodCenter,
         BloodType.of("A+"),
         today.plusDays(10));
+    request.acceptBy(donor, today);
 
-    Donation donation = Donation.registerFromRequest(
+    Donation donation = Donation.scheduleFromRequest(
         donor,
         request,
-        today,
-        bloodCenter);
+      today.plusDays(1),
+      today);
 
     assertNotNull(donation);
     assertTrue(donation.isFromRequest());
+    assertTrue(donation.isPending());
     assertEquals(request, donation.getRequest());
     assertEquals(donor, donation.getDonor());
-    assertEquals(today, donation.getDonationDate());
+    assertEquals(today.plusDays(1), donation.getDonationDate());
     assertEquals(bloodCenter, donation.getBloodCenter());
   }
 
@@ -74,7 +78,7 @@ class DonationTest {
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> Donation.registerExternalDonation(donor, tomorrow, bloodCenter));
+      () -> Donation.registerExternalDonation(donor, tomorrow, bloodCenter, LocalDate.now()));
   }
 
   @Test
@@ -91,34 +95,36 @@ class DonationTest {
         bloodCenter,
         BloodType.of("A+"),
         today.plusDays(10));
+    request.acceptBy(donor, today);
+
+    Donation pendingDonation = Donation.scheduleFromRequest(
+      donor,
+      request,
+      today,
+      today);
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> Donation.registerFromRequest(donor, request, tomorrow, bloodCenter));
+      () -> pendingDonation.complete(tomorrow, today));
   }
 
   @Test
-  void shouldThrowWhenBloodCenterDiffersFromRequestBloodCenter() {
+    void shouldThrowWhenDonorDidNotAcceptRequest() {
     LocalDate today = LocalDate.now();
 
     Donor donor = createEligibleDonor("O-", today);
     Requester requester = createRequester();
-    BloodCenter requestBloodCenter = createBloodCenter("12345678000100");
-    BloodCenter anotherBloodCenter = createBloodCenter("00987654000199");
+    BloodCenter bloodCenter = createBloodCenter("12345678000100");
 
     DonationRequest request = DonationRequest.create(
         requester,
-        requestBloodCenter,
+      bloodCenter,
         BloodType.of("A+"),
         today.plusDays(10));
 
     assertThrows(
         IllegalStateException.class,
-        () -> Donation.registerFromRequest(
-            donor,
-            request,
-            today,
-            anotherBloodCenter));
+      () -> Donation.scheduleFromRequest(donor, request, today.plusDays(1), today));
   }
 
   @Test
@@ -139,11 +145,11 @@ class DonationTest {
 
     assertThrows(
         IllegalStateException.class,
-        () -> Donation.registerFromRequest(
+      () -> Donation.scheduleFromRequest(
             donor,
             request,
-            today,
-            bloodCenter));
+        today.plusDays(1),
+        today));
   }
 
   private Requester createRequester() {

@@ -49,6 +49,29 @@ class DonationFactoryTest {
   }
 
   @Test
+  void shouldNotUpdateDonorLastDonationDateWhenCreatingPendingDonationFromRequest() {
+    LocalDate today = LocalDate.now();
+
+    Donor donor = createEligibleDonor("O-", today);
+    Requester requester = createRequester();
+    BloodCenter bloodCenter = createBloodCenter("12345678000100");
+
+    DonationRequest request = DonationRequest.create(
+        requester,
+        bloodCenter,
+        BloodType.of("A+"),
+        today.plusDays(10));
+
+    request.acceptBy(donor, today);
+
+    Donation donation = factory.createPendingDonationFromRequest(donor, request, today.plusDays(1));
+
+    assertNotNull(donation);
+    assertTrue(donation.isPending());
+    assertNull(donor.getLastDonationDate());
+  }
+
+  @Test
   void shouldRegisterDonationFromRequestAndUpdateDonorLastDonationDate() {
     LocalDate today = LocalDate.now();
 
@@ -64,10 +87,12 @@ class DonationFactoryTest {
 
     request.acceptBy(donor, today);
 
-    Donation donation = factory.createDonationFromRequest(donor, request, today);
+    Donation pendingDonation = factory.createPendingDonationFromRequest(donor, request, today);
+    Donation donation = factory.completePendingDonation(pendingDonation, today);
 
     assertNotNull(donation);
     assertTrue(donation.isFromRequest());
+    assertTrue(donation.isCompleted());
     assertEquals(request, donation.getRequest());
     assertEquals(today, donor.getLastDonationDate());
   }
@@ -88,7 +113,7 @@ class DonationFactoryTest {
 
     assertThrows(
         IllegalStateException.class,
-        () -> factory.createDonationFromRequest(donor, request, today));
+      () -> factory.createPendingDonationFromRequest(donor, request, today));
   }
 
   @Test
@@ -106,11 +131,12 @@ class DonationFactoryTest {
         today.plusDays(10));
 
     request.acceptBy(donor, today);
+    Donation pendingDonation = factory.createPendingDonationFromRequest(donor, request, today);
     donor.registerDonation(today.minusMonths(1));
 
     assertThrows(
         IllegalStateException.class,
-        () -> factory.createDonationFromRequest(donor, request, today));
+      () -> factory.completePendingDonation(pendingDonation, today));
   }
 
   private Requester createRequester() {

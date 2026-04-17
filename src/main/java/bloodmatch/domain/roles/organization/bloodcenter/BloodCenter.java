@@ -9,4 +9,6 @@ public class BloodCenter extends OrganizationRole {
         super(organization);
     }
 
+    
+
 }
