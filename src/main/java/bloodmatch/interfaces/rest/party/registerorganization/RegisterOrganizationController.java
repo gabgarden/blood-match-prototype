@@ -32,10 +32,19 @@ public class RegisterOrganizationController {
         throw new IllegalArgumentException("name cannot be blank");
       if (isBlank(payload.cnpj()))
         throw new IllegalArgumentException("cnpj cannot be blank");
+      if (isBlank(payload.email()))
+        throw new IllegalArgumentException("email cannot be blank");
+      if (isBlank(payload.password()))
+        throw new IllegalArgumentException("password cannot be blank");
+      if (isBlank(payload.passwordConfirmation()))
+        throw new IllegalArgumentException("passwordConfirmation cannot be blank");
 
       Organization organization = registerPartyUseCase.registerOrganization(
           payload.name(),
-          payload.cnpj());
+          payload.cnpj(),
+          payload.email(),
+          payload.password(),
+          payload.passwordConfirmation());
 
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(Map.of(

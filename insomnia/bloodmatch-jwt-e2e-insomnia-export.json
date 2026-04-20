@@ -1,0 +1,582 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-04-20T17:40:00.000Z",
+  "__export_source": "insomnia.desktop.app:v10",
+  "resources": [
+    {
+      "_id": "wrk_bloodmatch_jwt",
+      "_type": "workspace",
+      "parentId": null,
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "Bloodmatch JWT API",
+      "description": "Colecao para validar autenticacao/autorizacao JWT end-to-end",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_bloodmatch_base",
+      "_type": "environment",
+      "parentId": "wrk_bloodmatch_jwt",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "access_token": "",
+        "person_id": "",
+        "organization_id": "",
+        "party_id": "",
+        "donor_id": "",
+        "blood_center_id": "",
+        "requester_id": "",
+        "request_id": "",
+        "donation_id": ""
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "access_token",
+          "person_id",
+          "organization_id",
+          "party_id",
+          "donor_id",
+          "blood_center_id",
+          "requester_id",
+          "request_id",
+          "donation_id"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1776706800000
+    },
+    {
+      "_id": "fld_public",
+      "_type": "request_group",
+      "parentId": "wrk_bloodmatch_jwt",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "1 - Public Endpoints",
+      "description": "Sem token",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1000
+    },
+    {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "parentId": "wrk_bloodmatch_jwt",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "2 - Authenticated Endpoints",
+      "description": "Exigem Authorization Bearer",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -900
+    },
+    {
+      "_id": "fld_role_donor",
+      "_type": "request_group",
+      "parentId": "wrk_bloodmatch_jwt",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "3 - Role DONOR",
+      "description": "Exigem role DONOR ou SYSTEM_ADMIN",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -800
+    },
+    {
+      "_id": "fld_role_requester",
+      "_type": "request_group",
+      "parentId": "wrk_bloodmatch_jwt",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "4 - Role REQUESTER",
+      "description": "Exigem role REQUESTER ou SYSTEM_ADMIN",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -700
+    },
+    {
+      "_id": "fld_role_blood_center",
+      "_type": "request_group",
+      "parentId": "wrk_bloodmatch_jwt",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "name": "5 - Donor Donation Actions",
+      "description": "Exigem role DONOR ou SYSTEM_ADMIN",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -600
+    },
+
+    {
+      "_id": "req_register_person",
+      "_type": "request",
+      "parentId": "fld_public",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/parties/persons",
+      "name": "POST Register Person",
+      "description": "Cria Person + UserAccount",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Maria da Silva\",\n  \"cpf\": \"12345678901\",\n  \"birthDate\": \"1995-05-20\",\n  \"email\": \"maria@bloodmatch.com\",\n  \"password\": \"senhaForte123\",\n  \"passwordConfirmation\": \"senhaForte123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_register_organization",
+      "_type": "request",
+      "parentId": "fld_public",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/parties/organizations",
+      "name": "POST Register Organization",
+      "description": "Cria Organization + UserAccount",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Hemocentro Central\",\n  \"cnpj\": \"12345678000100\",\n  \"email\": \"hemo@bloodmatch.com\",\n  \"password\": \"senhaForte123\",\n  \"passwordConfirmation\": \"senhaForte123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_login",
+      "_type": "request",
+      "parentId": "fld_public",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/auth/login",
+      "name": "POST Login",
+      "description": "Use o accessToken retornado e copie para _.access_token no Environment",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"maria@bloodmatch.com\",\n  \"password\": \"senhaForte123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -800,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+
+    {
+      "_id": "req_update_party_name",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/parties/name",
+      "name": "PATCH Update Party Name",
+      "description": "AUTHENTICATED",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"partyId\": \"{{ _.party_id }}\",\n  \"newName\": \"Novo Nome Party\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_register_donor",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donors",
+      "name": "POST Register Donor",
+      "description": "AUTHENTICATED",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"personId\": \"{{ _.person_id }}\",\n  \"bloodType\": \"O+\",\n  \"weight\": 72.5\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_update_donor_profile",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donors/profile",
+      "name": "PATCH Update Donor Profile",
+      "description": "AUTHENTICATED",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"personId\": \"{{ _.person_id }}\",\n  \"bloodType\": \"A+\",\n  \"weight\": 74.0\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -800,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_register_requester",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/requesters",
+      "name": "POST Register Requester",
+      "description": "AUTHENTICATED",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"partyId\": \"{{ _.party_id }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -700,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_get_donor_summary",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donors/{{ _.donor_id }}/summary",
+      "name": "GET Donor Summary",
+      "description": "AUTHENTICATED",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -600,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_get_donor_history",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donors/{{ _.donor_id }}/donations",
+      "name": "GET Donor Donation History",
+      "description": "AUTHENTICATED",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -500,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+
+    {
+      "_id": "req_get_recommendations",
+      "_type": "request",
+      "parentId": "fld_role_donor",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/requests/recommendations",
+      "name": "GET Recommended Requests",
+      "description": "DONOR or SYSTEM_ADMIN",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "donorId",
+          "value": "{{ _.donor_id }}"
+        }
+      ],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_accept_and_create_pending",
+      "_type": "request",
+      "parentId": "fld_role_donor",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donation-requests/accept-and-create-pending",
+      "name": "POST Accept Request And Create Pending Donation",
+      "description": "DONOR or SYSTEM_ADMIN",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"requestId\": \"{{ _.request_id }}\",\n  \"donorId\": \"{{ _.donor_id }}\",\n  \"expectedDate\": \"2026-12-20\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+
+    {
+      "_id": "req_create_donation_request",
+      "_type": "request",
+      "parentId": "fld_role_requester",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donation-requests",
+      "name": "POST Create Donation Request",
+      "description": "REQUESTER or SYSTEM_ADMIN",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"requesterId\": \"{{ _.requester_id }}\",\n  \"bloodCenterId\": \"{{ _.blood_center_id }}\",\n  \"bloodTypeNeeded\": \"A+\",\n  \"dateLimit\": \"2026-12-31\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+
+    {
+      "_id": "req_create_external_donation",
+      "_type": "request",
+      "parentId": "fld_role_blood_center",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donations/external",
+      "name": "POST Create External Donation",
+      "description": "DONOR or SYSTEM_ADMIN",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"donorId\": \"{{ _.donor_id }}\",\n  \"bloodCenterId\": \"{{ _.blood_center_id }}\",\n  \"donationDate\": \"2026-12-15\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    },
+    {
+      "_id": "req_complete_donation_from_request",
+      "_type": "request",
+      "parentId": "fld_role_blood_center",
+      "modified": 1776706800000,
+      "created": 1776706800000,
+      "url": "{{ _.base_url }}/donations/from-request/complete",
+      "name": "PATCH Complete Donation From Request",
+      "description": "DONOR or SYSTEM_ADMIN",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"donationId\": \"{{ _.donation_id }}\",\n  \"completionDate\": \"2026-12-21\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ _.access_token }}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -900,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global"
+    }
+  ]
+}

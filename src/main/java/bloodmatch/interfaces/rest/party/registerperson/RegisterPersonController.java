@@ -34,11 +34,20 @@ public class RegisterPersonController {
         throw new IllegalArgumentException("cpf cannot be blank");
       if (payload.birthDate() == null)
         throw new IllegalArgumentException("birthDate cannot be null");
+      if (isBlank(payload.email()))
+        throw new IllegalArgumentException("email cannot be blank");
+      if (isBlank(payload.password()))
+        throw new IllegalArgumentException("password cannot be blank");
+      if (isBlank(payload.passwordConfirmation()))
+        throw new IllegalArgumentException("passwordConfirmation cannot be blank");
 
       Person person = registerPartyUseCase.registerPerson(
           payload.name(),
           payload.cpf(),
-          payload.birthDate());
+          payload.birthDate(),
+          payload.email(),
+          payload.password(),
+          payload.passwordConfirmation());
 
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(Map.of(

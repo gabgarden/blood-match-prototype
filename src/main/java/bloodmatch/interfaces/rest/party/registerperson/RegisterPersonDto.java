@@ -5,5 +5,8 @@ import java.time.LocalDate;
 public record RegisterPersonDto(
     String name,
     String cpf,
-    LocalDate birthDate) {
+    LocalDate birthDate,
+    String email,
+    String password,
+    String passwordConfirmation) {
 }
