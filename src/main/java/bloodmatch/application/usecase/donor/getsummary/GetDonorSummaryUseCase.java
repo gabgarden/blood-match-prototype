@@ -46,6 +46,7 @@ public class GetDonorSummaryUseCase {
 
     return new Output(
         donor.getPerson().getId().getValue().toString(),
+        donor.getPerson().getName(),
         donor.getBloodType().getType(),
         lastDonationDate,
         daysRemaining,
@@ -67,6 +68,7 @@ public class GetDonorSummaryUseCase {
 
   public record Output(
       String donorId,
+      String donorName,
       String bloodType,
       LocalDate lastDonationDate,
       int daysRemaining,
