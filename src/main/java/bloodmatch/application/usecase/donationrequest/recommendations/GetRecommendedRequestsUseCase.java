@@ -1,6 +1,7 @@
 package bloodmatch.application.usecase.donationrequest.recommendations;
 
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
 import bloodmatch.domain.repositories.DonorRepositoryInterface;
 import bloodmatch.domain.roles.person.donor.Donor;
@@ -52,13 +53,16 @@ public class GetRecommendedRequestsUseCase {
         request.getId().getValue().toString(),
         request.getBloodTypeNeeded().getType(),
         request.getDateLimit(),
-        request.getBloodCenter().getOrganization().getName());
-  }
+        request.getBloodCenter().getOrganization().getName(),
+        request.getUrgency());
+  };
 
   public record OutputItem(
       String requestId,
       String bloodTypeNeeded,
       java.time.LocalDate dateLimit,
-      String bloodCenterName) {
-  }
+      String bloodCenterName,
+      Urgency urgency) { 
+        
+      }
 }

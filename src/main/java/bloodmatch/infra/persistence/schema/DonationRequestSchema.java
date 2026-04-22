@@ -1,6 +1,7 @@
 package bloodmatch.infra.persistence.schema;
 
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.repositories.DonorRepositoryInterface;
 import bloodmatch.domain.repositories.PartyRepositoryInterface;
 import bloodmatch.domain.repositories.RequesterRepositoryInterface;
@@ -38,6 +39,7 @@ public class DonationRequestSchema {
   private LocalDate dateLimit;
   private boolean active;
   private List<String> acceptedDonorsIds;
+  private String urgency;
 
   public DonationRequestSchema(DonationRequest donationRequest) {
     if (donationRequest == null)
@@ -50,6 +52,7 @@ public class DonationRequestSchema {
     this.dateRequested = donationRequest.getDateRequested();
     this.dateLimit = donationRequest.getDateLimit();
     this.active = donationRequest.isActive();
+    this.urgency = donationRequest.getUrgency().name();
     this.acceptedDonorsIds = donationRequest.getAcceptedDonors()
         .stream()
         .map(donor -> donor.getPerson().getId().getValue().toString())
@@ -91,6 +94,7 @@ public class DonationRequestSchema {
         this.dateRequested,
         this.dateLimit,
         this.active,
-        acceptedDonors);
+        acceptedDonors,
+        Urgency.valueOf(this.urgency));
   }
 }

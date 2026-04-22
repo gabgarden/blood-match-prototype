@@ -21,13 +21,15 @@ public class DonationRequest extends DomainObject {
   private LocalDate dateLimit;
   private boolean active;
   private List<Donor> acceptedDonors = new ArrayList<>();
+  private Urgency urgency;
 
   private DonationRequest(
       Requester requester,
       BloodCenter bloodCenter,
       BloodType bloodTypeNeeded,
       LocalDate dateLimit,
-      LocalDate currentDate) {
+      LocalDate currentDate,
+      Urgency urgency) {
     this.id = DomainID.generate();
     this.requester = requester;
     this.bloodCenter = bloodCenter;
@@ -35,19 +37,7 @@ public class DonationRequest extends DomainObject {
     this.dateRequested = currentDate;
     this.dateLimit = dateLimit;
     this.active = true;
-  }
-
-  public static DonationRequest create(
-      Requester requester,
-      BloodCenter bloodCenter,
-      BloodType bloodTypeNeeded,
-      LocalDate dateLimit) {
-    return create(
-        requester,
-        bloodCenter,
-        bloodTypeNeeded,
-        dateLimit,
-        LocalDate.now());
+    this.urgency = urgency;
   }
 
   public static DonationRequest create(
@@ -55,7 +45,23 @@ public class DonationRequest extends DomainObject {
       BloodCenter bloodCenter,
       BloodType bloodTypeNeeded,
       LocalDate dateLimit,
-      LocalDate currentDate) {
+      Urgency urgency) {
+    return create(
+        requester,
+        bloodCenter,
+        bloodTypeNeeded,
+        dateLimit,
+        LocalDate.now(),
+        urgency);
+  }
+
+  public static DonationRequest create(
+      Requester requester,
+      BloodCenter bloodCenter,
+      BloodType bloodTypeNeeded,
+      LocalDate dateLimit,
+      LocalDate currentDate,
+      Urgency urgency) {
     if (requester == null)
       throw new IllegalArgumentException("Requester cannot be null");
     if (bloodCenter == null)
@@ -73,7 +79,8 @@ public class DonationRequest extends DomainObject {
         bloodCenter,
         bloodTypeNeeded,
         dateLimit,
-        currentDate);
+        currentDate,
+        urgency);
   }
 
   public static DonationRequest reconstitute(
@@ -84,7 +91,8 @@ public class DonationRequest extends DomainObject {
       LocalDate dateRequested,
       LocalDate dateLimit,
       boolean active,
-      List<Donor> acceptedDonors) {
+      List<Donor> acceptedDonors,
+      Urgency urgency) {
 
     if (id == null)
       throw new IllegalArgumentException("Id cannot be null");
@@ -106,7 +114,8 @@ public class DonationRequest extends DomainObject {
         bloodCenter,
         bloodTypeNeeded,
         dateLimit,
-        dateRequested);
+        dateRequested,
+        urgency);
 
     request.setId(id);
     request.dateRequested = dateRequested;
@@ -210,4 +219,10 @@ public class DonationRequest extends DomainObject {
   public List<Donor> getAcceptedDonors() {
     return Collections.unmodifiableList(acceptedDonors);
   }
+
+  public Urgency getUrgency() {
+    return urgency;
+  }
+
+  
 }

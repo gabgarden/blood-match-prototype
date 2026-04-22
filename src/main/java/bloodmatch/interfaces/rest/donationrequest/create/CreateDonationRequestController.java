@@ -2,6 +2,7 @@ package bloodmatch.interfaces.rest.donationrequest.create;
 
 import bloodmatch.application.usecase.donationrequest.CreateDonationRequestUseCase;
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.shared.valueObjects.BloodType;
 import bloodmatch.domain.shared.valueObjects.DomainID;
 import org.springframework.http.HttpStatus;
@@ -34,12 +35,14 @@ public class CreateDonationRequestController {
       DomainID requesterDomainId = parseDomainId(payload.requesterId(), "requesterId");
       DomainID bloodCenterDomainId = parseDomainId(payload.bloodCenterId(), "bloodCenterId");
       BloodType bloodTypeNeeded = BloodType.of(payload.bloodTypeNeeded());
+      Urgency urgency = Urgency.valueOf(payload.urgency().toUpperCase());
 
       DonationRequest request = useCase.execute(
           requesterDomainId,
           bloodCenterDomainId,
           bloodTypeNeeded,
-          payload.dateLimit());
+          payload.dateLimit(),
+          urgency);
 
       return ResponseEntity
           .status(HttpStatus.CREATED)
@@ -67,5 +70,8 @@ public class CreateDonationRequestController {
 
     if (payload.dateLimit() == null)
       throw new IllegalArgumentException("dateLimit cannot be null");
+
+    if (isBlank(payload.urgency()))
+      throw new IllegalArgumentException("urgency cannot be blank");
   }
 }

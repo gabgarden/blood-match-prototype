@@ -6,5 +6,6 @@ public record CreateDonationRequestDto(
     String requesterId,
     String bloodCenterId,
     String bloodTypeNeeded,
-    LocalDate dateLimit) {
+    LocalDate dateLimit,
+    String urgency) {
 }

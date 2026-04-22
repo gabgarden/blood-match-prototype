@@ -1,6 +1,7 @@
 package bloodmatch.application.usecase.donationrequest;
 
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
 import bloodmatch.domain.repositories.PartyRepositoryInterface;
 import bloodmatch.domain.repositories.RequesterRepositoryInterface;
@@ -42,13 +43,15 @@ public class CreateDonationRequestUseCase {
       DomainID requesterID,
       DomainID bloodCenterID,
       BloodType bloodTypeNeeded,
-      LocalDate dateLimit) {
+      LocalDate dateLimit,
+      Urgency urgency) {
     return execute(
         requesterID,
         bloodCenterID,
         bloodTypeNeeded,
         dateLimit,
-        LocalDate.now());
+        LocalDate.now(),
+        urgency);
   }
 
   public DonationRequest execute(
@@ -56,7 +59,8 @@ public class CreateDonationRequestUseCase {
       DomainID bloodCenterID,
       BloodType bloodTypeNeeded,
       LocalDate dateLimit,
-      LocalDate currentDate) {
+      LocalDate currentDate,
+      Urgency urgency) {
 
     if (requesterID == null)
       throw new IllegalArgumentException("Requester id cannot be null");
@@ -68,6 +72,8 @@ public class CreateDonationRequestUseCase {
       throw new IllegalArgumentException("Date limit cannot be null");
     if (currentDate == null)
       throw new IllegalArgumentException("Current date cannot be null");
+    if (urgency == null)
+      throw new IllegalArgumentException("Urgency cannot be null");
     if (dateLimit.isBefore(currentDate))
       throw new IllegalArgumentException("Date limit cannot be before current date");
 
@@ -86,7 +92,8 @@ public class CreateDonationRequestUseCase {
         bloodCenter,
         bloodTypeNeeded,
         dateLimit,
-        currentDate);
+        currentDate,
+        urgency);
 
     donationRequestRepository.save(request);
     return request;
