@@ -2,6 +2,7 @@ package bloodmatch.application.usecase;
 
 import bloodmatch.application.usecase.donationrequest.recommendations.GetRecommendedRequestsUseCase;
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
@@ -93,6 +94,7 @@ class GetRecommendedRequestsUseCaseTest {
         bloodCenter,
         BloodType.of("A+"),
         currentDate.plusDays(10),
-        currentDate);
+        currentDate,
+        Urgency.MEDIUM);
   }
 }

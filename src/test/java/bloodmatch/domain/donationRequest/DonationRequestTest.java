@@ -2,6 +2,7 @@ package bloodmatch.domain.donationRequest;
 
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
@@ -62,7 +63,8 @@ class DonationRequestTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        LocalDate.now().plusDays(10));
+      LocalDate.now().plusDays(10),
+      Urgency.MEDIUM);
 
     assertTrue(request.isActive());
     assertEquals("A+", request.getBloodTypeNeeded().getType());
@@ -78,7 +80,8 @@ class DonationRequestTest {
             null,
             bloodCenter,
             BloodType.of("A+"),
-            LocalDate.now().plusDays(10)));
+            LocalDate.now().plusDays(10),
+            Urgency.MEDIUM));
   }
 
   @Test
@@ -93,7 +96,8 @@ class DonationRequestTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        currentDate.plusDays(1));
+      currentDate.plusDays(1),
+      Urgency.MEDIUM);
 
     assertThrows(
         IllegalArgumentException.class,
@@ -114,7 +118,8 @@ class DonationRequestTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        currentDate.plusDays(10));
+      currentDate.plusDays(10),
+      Urgency.MEDIUM);
 
     assertThrows(
         IllegalStateException.class,
@@ -133,7 +138,8 @@ class DonationRequestTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        currentDate.plusDays(10));
+      currentDate.plusDays(10),
+      Urgency.MEDIUM);
 
     request.acceptBy(donor, currentDate);
 
@@ -154,7 +160,8 @@ class DonationRequestTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        currentDate.plusDays(10));
+      currentDate.plusDays(10),
+      Urgency.MEDIUM);
 
     request.acceptBy(donor, currentDate);
 
@@ -176,7 +183,8 @@ class DonationRequestTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        currentDate.plusDays(10));
+      currentDate.plusDays(10),
+      Urgency.MEDIUM);
 
     request.close();
 

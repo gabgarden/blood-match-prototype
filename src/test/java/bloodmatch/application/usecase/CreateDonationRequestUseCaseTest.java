@@ -6,6 +6,7 @@ import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
 import bloodmatch.domain.repositories.PartyRepositoryInterface;
 import bloodmatch.domain.repositories.RequesterRepositoryInterface;
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.requester.Requester;
 import bloodmatch.domain.shared.valueObjects.BloodType;
@@ -62,7 +63,8 @@ class CreateDonationRequestUseCaseTest {
         bloodCenterId,
         BloodType.of("A+"),
         dateLimit,
-        currentDate);
+        currentDate,
+        Urgency.MEDIUM);
 
     assertNotNull(request);
     assertEquals(currentDate, request.getDateRequested());
@@ -89,6 +91,7 @@ class CreateDonationRequestUseCaseTest {
             bloodCenterId,
             BloodType.of("A+"),
             currentDate.plusDays(10),
-            currentDate));
+                        currentDate,
+                        Urgency.MEDIUM));
   }
 }

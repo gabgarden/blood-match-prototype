@@ -2,6 +2,7 @@ package bloodmatch.domain.donation;
 
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.party.Organization;
 import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
 import bloodmatch.domain.roles.person.donor.Donor;
@@ -60,7 +61,8 @@ class DonationFactoryTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        today.plusDays(10));
+      today.plusDays(10),
+      Urgency.MEDIUM);
 
     request.acceptBy(donor, today);
 
@@ -83,7 +85,8 @@ class DonationFactoryTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        today.plusDays(10));
+      today.plusDays(10),
+      Urgency.MEDIUM);
 
     request.acceptBy(donor, today);
 
@@ -109,7 +112,8 @@ class DonationFactoryTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        today.plusDays(10));
+      today.plusDays(10),
+      Urgency.MEDIUM);
 
     assertThrows(
         IllegalStateException.class,
@@ -128,7 +132,8 @@ class DonationFactoryTest {
         requester,
         bloodCenter,
         BloodType.of("A+"),
-        today.plusDays(10));
+      today.plusDays(10),
+      Urgency.MEDIUM);
 
     request.acceptBy(donor, today);
     Donation pendingDonation = factory.createPendingDonationFromRequest(donor, request, today);

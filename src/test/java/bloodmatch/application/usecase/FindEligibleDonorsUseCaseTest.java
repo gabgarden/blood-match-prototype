@@ -2,6 +2,7 @@ package bloodmatch.application.usecase;
 
 import bloodmatch.application.usecase.donationrequest.FindEligibleDonorsUseCase;
 import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
 import bloodmatch.domain.matching.DonorMatchingService;
 import bloodmatch.domain.party.Person;
 import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
@@ -109,7 +110,8 @@ class FindEligibleDonorsUseCaseTest {
         bloodCenter,
         BloodType.of("A+"),
         currentDate.plusDays(10),
-        currentDate);
+      currentDate,
+      Urgency.MEDIUM);
   }
 
   private Donor createDonor(LocalDate currentDate, String cpf) {

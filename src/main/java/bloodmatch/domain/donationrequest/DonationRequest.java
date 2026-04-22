@@ -72,6 +72,8 @@ public class DonationRequest extends DomainObject {
       throw new IllegalArgumentException("Limit date cannot be null");
     if (currentDate == null)
       throw new IllegalArgumentException("Current date cannot be null");
+    if (urgency == null)
+      throw new IllegalArgumentException("Urgency cannot be null");
     if (dateLimit.isBefore(currentDate))
       throw new IllegalArgumentException("Limit date invalid");
     return new DonationRequest(
@@ -108,6 +110,8 @@ public class DonationRequest extends DomainObject {
       throw new IllegalArgumentException("Limit date cannot be null");
     if (acceptedDonors == null)
       throw new IllegalArgumentException("Accepted donors cannot be null");
+    if (urgency == null)
+      throw new IllegalArgumentException("Urgency cannot be null");
 
     DonationRequest request = new DonationRequest(
         requester,
@@ -223,6 +227,4 @@ public class DonationRequest extends DomainObject {
   public Urgency getUrgency() {
     return urgency;
   }
-
-  
 }

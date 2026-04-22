@@ -40,8 +40,6 @@ token_for() {
 require_command curl
 require_command jq
 
-LIMIT_DATE=$(date -d "+20 days" +%F)
-
 echo "Seeding via API: $API_URL"
 
 DONORS_DATA=$'Ana Silva|12345678901|1993-05-10|ana.silva@blood.local|O-|78.0\nBruno Santos|98765432100|1990-08-21|bruno.santos@blood.local|O+|82.0\nCarla Oliveira|11122233344|1988-04-14|carla.oliveira@blood.local|A-|74.0\nDaniel Costa|22233344455|1992-09-02|daniel.costa@blood.local|A+|68.5\nFernanda Lima|33344455566|1987-12-18|fernanda.lima@blood.local|B-|80.0\nGabriel Almeida|44455566677|1995-03-23|gabriel.almeida@blood.local|B+|71.5\nHelena Rocha|55566677788|1989-07-11|helena.rocha@blood.local|AB-|76.0\nIgor Pereira|66677788899|1991-11-30|igor.pereira@blood.local|AB+|69.0\nJuliana Martins|77788899900|1994-01-19|juliana.martins@blood.local|O+|77.0\nLucas Ferreira|88899900011|1996-06-27|lucas.ferreira@blood.local|A+|66.0'
@@ -137,6 +135,9 @@ for i in "${!DONOR_PERSON_IDS[@]}"; do
   external_donation_ids+=("$donation_id")
 done
 
+donor_logins=$(printf "%s\n" "$DONORS_DATA" | awk -F'|' '{print "- " $4}')
+org_logins=$(printf "%s\n" "$ORGS_DATA" | awk -F'|' '{print "- " $3}')
+
 cat <<EOF
 Seed concluído.
 Doadores: ${#DONOR_PERSON_IDS[@]}
@@ -144,4 +145,11 @@ Hemocentros/hospitais: ${#ORG_IDS[@]}
 Requests criados: ${#created_request_ids[@]}
 Requests aceitos e concluídos: ${#completed_donation_ids[@]}
 Doações externas: ${#external_donation_ids[@]}
+Senha padrão: $SEED_PASSWORD
+
+Logins de doadores:
+$donor_logins
+
+Logins de hemocentros/hospitais:
+$org_logins
 EOF
