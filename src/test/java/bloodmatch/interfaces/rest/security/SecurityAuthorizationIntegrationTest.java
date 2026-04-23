@@ -1,6 +1,7 @@
 package bloodmatch.interfaces.rest.security;
 
 import bloodmatch.application.usecase.donationrequest.recommendations.GetRecommendedRequestsUseCase;
+import bloodmatch.application.usecase.donationrequest.GetDonationRequestsByUserIdUseCase;
 import bloodmatch.domain.shared.valueObjects.DomainID;
 import bloodmatch.infra.security.JwtTokenProvider;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,9 @@ class SecurityAuthorizationIntegrationTest {
 
   @MockitoBean
   private GetRecommendedRequestsUseCase getRecommendedRequestsUseCase;
+
+  @MockitoBean
+  private GetDonationRequestsByUserIdUseCase getDonationRequestsByUserIdUseCase;
 
   @Test
   void shouldReturn401WhenTokenIsMissing() throws Exception {
@@ -72,6 +76,46 @@ class SecurityAuthorizationIntegrationTest {
 
     mockMvc.perform(get("/requests/recommendations")
             .param("donorId", UUID.randomUUID().toString())
+            .header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk())
+        .andExpect(content().json("[]"));
+  }
+
+  @Test
+  void shouldReturn401WhenTokenIsMissingForUserDonationRequests() throws Exception {
+    mockMvc.perform(get("/users/{userId}/donation-requests", UUID.randomUUID()))
+        .andExpect(status().isUnauthorized());
+
+    verify(getDonationRequestsByUserIdUseCase, never()).execute(any(DomainID.class));
+  }
+
+  @Test
+  void shouldReturn403WhenTokenRoleIsNotAllowedForUserDonationRequests() throws Exception {
+    String token = "donor-token";
+
+    when(jwtTokenProvider.validateToken(token)).thenReturn(true);
+    when(jwtTokenProvider.extractRoles(token)).thenReturn(List.of("DONOR"));
+    when(jwtTokenProvider.extractUserId(token)).thenReturn(UUID.randomUUID().toString());
+    when(jwtTokenProvider.extractPartyId(token)).thenReturn(UUID.randomUUID().toString());
+
+    mockMvc.perform(get("/users/{userId}/donation-requests", UUID.randomUUID())
+            .header("Authorization", "Bearer " + token))
+        .andExpect(status().isForbidden());
+
+    verify(getDonationRequestsByUserIdUseCase, never()).execute(any(DomainID.class));
+  }
+
+  @Test
+  void shouldReturn200WhenTokenHasAllowedRoleForUserDonationRequests() throws Exception {
+    String token = "requester-token";
+
+    when(jwtTokenProvider.validateToken(token)).thenReturn(true);
+    when(jwtTokenProvider.extractRoles(token)).thenReturn(List.of("REQUESTER"));
+    when(jwtTokenProvider.extractUserId(token)).thenReturn(UUID.randomUUID().toString());
+    when(jwtTokenProvider.extractPartyId(token)).thenReturn(UUID.randomUUID().toString());
+    when(getDonationRequestsByUserIdUseCase.execute(any(DomainID.class))).thenReturn(List.of());
+
+    mockMvc.perform(get("/users/{userId}/donation-requests", UUID.randomUUID())
             .header("Authorization", "Bearer " + token))
         .andExpect(status().isOk())
         .andExpect(content().json("[]"));

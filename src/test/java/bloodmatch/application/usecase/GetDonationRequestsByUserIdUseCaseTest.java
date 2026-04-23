@@ -1,0 +1,70 @@
+package bloodmatch.application.usecase;
+
+import bloodmatch.application.usecase.donationrequest.GetDonationRequestsByUserIdUseCase;
+import bloodmatch.domain.donationrequest.DonationRequest;
+import bloodmatch.domain.donationrequest.Urgency;
+import bloodmatch.domain.party.Organization;
+import bloodmatch.domain.party.Person;
+import bloodmatch.domain.repositories.DonationRequestRepositoryInterface;
+import bloodmatch.domain.roles.organization.bloodcenter.BloodCenter;
+import bloodmatch.domain.roles.requester.Requester;
+import bloodmatch.domain.shared.valueObjects.BloodType;
+import bloodmatch.domain.shared.valueObjects.CNPJ;
+import bloodmatch.domain.shared.valueObjects.CPF;
+import bloodmatch.domain.shared.valueObjects.DomainID;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+class GetDonationRequestsByUserIdUseCaseTest {
+
+  private final DonationRequestRepositoryInterface donationRequestRepository = mock(DonationRequestRepositoryInterface.class);
+  private final GetDonationRequestsByUserIdUseCase useCase = new GetDonationRequestsByUserIdUseCase(donationRequestRepository);
+
+  @Test
+  void shouldReturnRequestsOrderedByDateRequestedDesc() {
+    LocalDate now = LocalDate.of(2026, 4, 23);
+    DomainID userId = DomainID.generate();
+
+    DonationRequest older = createRequest(now.minusDays(3));
+    DonationRequest newer = createRequest(now.minusDays(1));
+
+    when(donationRequestRepository.findByRequesterPartyId(userId)).thenReturn(List.of(older, newer));
+
+    List<GetDonationRequestsByUserIdUseCase.OutputItem> result = useCase.execute(userId);
+
+    assertEquals(2, result.size());
+    assertEquals(newer.getId().getValue().toString(), result.get(0).requestId());
+    assertEquals(older.getId().getValue().toString(), result.get(1).requestId());
+  }
+
+  @Test
+  void shouldThrowWhenUserIdIsNull() {
+    assertThrows(IllegalArgumentException.class, () -> useCase.execute(null));
+  }
+
+  private DonationRequest createRequest(LocalDate dateRequested) {
+    Requester requester = new Requester(new Person(
+        "Requester Person",
+        new CPF("12345678901"),
+        LocalDate.of(1990, 1, 1)));
+
+    BloodCenter bloodCenter = new BloodCenter(new Organization(
+        "Blood Center",
+        new CNPJ("12345678000100")));
+
+    return DonationRequest.create(
+        requester,
+        bloodCenter,
+        BloodType.of("A+"),
+        dateRequested.plusDays(10),
+        dateRequested,
+        Urgency.MEDIUM);
+  }
+}

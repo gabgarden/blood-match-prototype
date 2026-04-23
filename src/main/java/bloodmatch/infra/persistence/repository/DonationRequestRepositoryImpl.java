@@ -58,6 +58,17 @@ public class DonationRequestRepositoryImpl implements DonationRequestRepositoryI
         .toList();
   }
 
+  @Override
+  public List<DonationRequest> findByRequesterPartyId(DomainID requesterPartyId) {
+    if (requesterPartyId == null)
+      throw new IllegalArgumentException("Requester party id cannot be null");
+
+    return mongoRepository.findByRequesterId(requesterPartyId.getValue().toString())
+        .stream()
+        .map(this::toDomain)
+        .toList();
+  }
+
   private DonationRequest toDomain(DonationRequestSchema schema) {
     return schema.toDomain(requesterRepository, partyRepository, donorRepository);
   }

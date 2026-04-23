@@ -66,6 +66,7 @@ public class SecurityConfig {
             .requestMatchers(POST, "/parties/organizations").permitAll()
 
             .requestMatchers(GET, "/requests/recommendations").hasAnyAuthority("DONOR", "SYSTEM_ADMIN")
+            .requestMatchers(GET, "/users/*/donation-requests").hasAnyAuthority("REQUESTER", "SYSTEM_ADMIN")
             .requestMatchers(POST, "/donation-requests/accept-and-create-pending").hasAnyAuthority("DONOR", "SYSTEM_ADMIN")
             .requestMatchers(POST, "/donation-requests").hasAnyAuthority("REQUESTER", "SYSTEM_ADMIN")
              .requestMatchers(POST, "/donations/external").hasAnyAuthority("DONOR", "SYSTEM_ADMIN")

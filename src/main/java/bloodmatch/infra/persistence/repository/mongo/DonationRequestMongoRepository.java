@@ -10,4 +10,6 @@ import java.util.List;
 public interface DonationRequestMongoRepository extends MongoRepository<DonationRequestSchema, String> {
 
   List<DonationRequestSchema> findByActive(boolean active);
+
+  List<DonationRequestSchema> findByRequesterId(String requesterId);
 }

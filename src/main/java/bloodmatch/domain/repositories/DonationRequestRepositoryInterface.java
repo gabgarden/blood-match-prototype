@@ -15,4 +15,6 @@ public interface DonationRequestRepositoryInterface {
 
   List<DonationRequest> findActiveRequests();
 
+  List<DonationRequest> findByRequesterPartyId(DomainID requesterPartyId);
+
 }
